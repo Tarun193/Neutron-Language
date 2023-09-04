@@ -68,6 +68,31 @@ public class Scanner {
                 addToken(TokenType.STAR);
                 break;
 
+            // Handling opreators with mutliple caracters.
+            case '!':
+                addToken((match('=') ? TokenType.BANG_EQUAL : TokenType.BANG));
+            case '<':
+                addToken(match('=') ? TokenType.LESS_EQUAL : TokenType.LESS_EQUAL);
+            case '>':
+                addToken((match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER));
+            case '=':
+                addToken(match('=') ? TokenType.EQUAL : TokenType.EQUAL);
+
+                // It is a special case as it '//' means comments where as '/' means division
+                // operator.
+            case '/':
+                if (match('/')) {
+                    while (peek() != '\n' && !isAtEnd())
+                        advance();
+                } else {
+                    addToken(TokenType.SLASH);
+                }
+
+            // Cases for white spaces newline;
+            case '\t':
+            case '\r':
+            case ' ':
+                break;
             default:
                 neutron.error(line, "Unexcpected character.");
 
@@ -87,4 +112,24 @@ public class Scanner {
         String text = source.substring(start, current);
         tokens.add(new Token(type, text, litereral, line));
     }
+
+    // for matching the new character.
+
+    private boolean match(char expected) {
+        if (isAtEnd())
+            return false;
+        else if (source.charAt(current) != expected) {
+            return false;
+        }
+        current++;
+        return true;
+    }
+
+    // Peek it is same as advanc but in this we are just reading the current
+    // charcter not consuming it.
+    private char peek() {
+        if(isAtEnd()) return '\0';
+        return source.charAt(current);
+    }
+
 }
