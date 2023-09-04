@@ -88,13 +88,28 @@ public class Scanner {
                     addToken(TokenType.SLASH);
                 }
 
-            // Cases for white spaces newline;
+                // Cases for white spaces newline;
             case '\t':
             case '\r':
             case ' ':
                 break;
+
+            // Handling string litreals;
+            case '"':
+                string();
+                break;
+            // as the language is going to support both single qoute and duble quote
+            // strings.
+            case '\'':
+                string();
+                break;
+
             default:
-                neutron.error(line, "Unexcpected character.");
+                if (isDigit(c)) {
+                    number();
+                } else {
+                    neutron.error(line, "Unexcpected character.");
+                }
 
         }
     }
@@ -128,8 +143,66 @@ public class Scanner {
     // Peek it is same as advanc but in this we are just reading the current
     // charcter not consuming it.
     private char peek() {
-        if(isAtEnd()) return '\0';
+        if (isAtEnd())
+            return '\0';
         return source.charAt(current);
+    }
+
+    // for creating a string litreal token;
+    private void string() {
+        while (peek() != '"' && !isAtEnd()) {
+            if (peek() == '\n')
+                line++;
+            advance();
+        }
+
+        if (isAtEnd()) {
+            neutron.error(line, "Unterminated String.");
+        }
+
+        // to consume '"' string terminating character;
+        advance();
+
+        /*
+         * Here author in the text did substring, other way I will try creating an empty
+         * string,
+         * and start concaneting characters along the way while travesing string.
+         */
+        String value = source.substring(start + 1, current - 1);
+        addToken(TokenType.STRING, value);
+    }
+
+    /* method for checking weather a given given character is digit or not */
+    private boolean isDigit(char c) {
+        return (c >= '0' && c <= '9');
+    }
+
+    /*
+     * Method same as string, where this method consumes and create a
+     * number literal token.
+     */
+    private void number() {
+        while (isDigit(peek())) {
+            advance();
+        }
+        if (peek() == '.' && isDigit(peekNext())) {
+            // Consuming the decimal point.
+            advance();
+
+            while (isDigit(peek())) {
+                advance();
+            }
+        }
+
+        addToken(TokenType.NUMBER, Double.parseDouble(source.substring(start, current)));
+    }
+
+    private char peekNext() {
+        // if the source code is finsihed
+        if (current + 1 >= source.length()) {
+            return '\0';
+        }
+        return source.charAt(current + 1);
     }
 
 }

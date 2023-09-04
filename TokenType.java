@@ -13,6 +13,9 @@ enum TokenType {
     AND, CLASS, ELSE, FALSE, TRUE, FUN, FOR, IF,
     NIL, OR, PRINT, RETURN, SUPER, THIS, VAR, WHILE,
 
+    // Literals
+    STRING, NUMBER,
+
     EOF
 
 }
