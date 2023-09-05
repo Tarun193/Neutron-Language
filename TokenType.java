@@ -14,7 +14,7 @@ enum TokenType {
     NIL, OR, PRINT, RETURN, SUPER, THIS, VAR, WHILE,
 
     // Literals
-    STRING, NUMBER,
+    STRING, NUMBER, IDENTIFIER,
 
     EOF
 
