@@ -99,13 +99,19 @@ public class Scanner {
             // Handling opreators with mutliple caracters.
             case '!':
                 addToken((match('=') ? TokenType.BANG_EQUAL : TokenType.BANG));
+                break;
+
             case '<':
                 addToken(match('=') ? TokenType.LESS_EQUAL : TokenType.LESS_EQUAL);
+                break;
+
             case '>':
                 addToken((match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER));
+                break;
+
             case '=':
                 addToken(match('=') ? TokenType.EQUAL : TokenType.EQUAL);
-
+                break;
                 // It is a special case as it '//' means comments where as '/' means division
                 // operator.
             case '/':
@@ -113,8 +119,11 @@ public class Scanner {
                     while (peek() != '\n' && !isAtEnd())
                         advance();
                 } else {
+                    System.out.println("test:" + c);
                     addToken(TokenType.SLASH);
                 }
+
+                break;
 
                 // Cases for white spaces newline;
             case '\t':

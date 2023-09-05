@@ -56,6 +56,7 @@ class neutron {
         // TODO: Token and Scanner class needs Implementation.
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
+        System.out.println(tokens);
     }
 
     static void error(int line, String message) {
