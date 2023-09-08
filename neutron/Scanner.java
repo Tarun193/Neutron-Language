@@ -112,8 +112,8 @@ public class Scanner {
             case '=':
                 addToken(match('=') ? TokenType.EQUAL : TokenType.EQUAL);
                 break;
-                // It is a special case as it '//' means comments where as '/' means division
-                // operator.
+            // It is a special case as it '//' means comments where as '/' means division
+            // operator.
             case '/':
                 if (match('/')) {
                     while (peek() != '\n' && !isAtEnd())
@@ -122,10 +122,9 @@ public class Scanner {
                     System.out.println("test:" + c);
                     addToken(TokenType.SLASH);
                 }
-
                 break;
 
-                // Cases for white spaces newline;
+            // Cases for white spaces newline;
             case '\t':
             case '\r':
             case ' ':
