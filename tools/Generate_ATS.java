@@ -39,6 +39,12 @@ public class Generate_ATS {
         // Creating a class with basename and writing classes in it.
         writer.println("abstract class " + baseName + "{");
 
+        defineVisitor(writer, baseName, types);
+
+        // The base accept() method.
+        writer.println();
+        writer.println("  abstract <R> R accept(Visitor<R> visitor);");
+
         // for The ATS classes
         for (String type : types) {
             String className = type.split(":")[0].trim();
@@ -56,7 +62,7 @@ public class Generate_ATS {
     private static void defineType(
             PrintWriter writer, String baseName, String className, String fieldList) {
         writer.println("   static class " + className + " extends " + baseName + " {");
-        // constructuor
+        // constructor
         writer.println("    " + className + "(" + fieldList + "){");
         String[] fields = fieldList.split(", ");
         for (String field : fields) {
@@ -66,10 +72,31 @@ public class Generate_ATS {
 
         writer.println("    }");
 
+        // Visitor pattern.
+        writer.println();
+        writer.println("    @Override");
+        writer.println("    <R> R accept(Visitor<R> visitor) {");
+        writer.println("      return visitor.visit" +
+                className + baseName + "(this);");
+        writer.println("    }");
+
         // Fields.
         writer.println();
         for (String field : fields) {
             writer.println("    final " + field + ";");
+        }
+
+        writer.println("  }");
+    }
+
+    private static void defineVisitor(
+            PrintWriter writer, String baseName, List<String> types) {
+        writer.println("  interface Visitor<R> {");
+
+        for (String type : types) {
+            String typeName = type.split(":")[0].trim();
+            writer.println("    R visit" + typeName + baseName + "(" +
+                    typeName + " " + baseName.toLowerCase() + ");");
         }
 
         writer.println("  }");
