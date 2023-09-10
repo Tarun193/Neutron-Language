@@ -1,4 +1,4 @@
-public class ATSPrinter implements Expr.Visitor<String> {
+public class ASTPrinter implements Expr.Visitor<String> {
 
     public String print(Expr expr) {
         return expr.accept(this);
@@ -45,6 +45,6 @@ public class ATSPrinter implements Expr.Visitor<String> {
                 new Token(TokenType.STAR, "*", null, 1),
                 new Expr.Grouping(new Expr.Literal(123.4)));
 
-        System.out.println(new ATSPrinter().print(expr));
+        System.out.println(new ASTPrinter().print(expr));
     }
 }

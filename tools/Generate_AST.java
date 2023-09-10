@@ -8,10 +8,10 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 
-public class Generate_ATS {
+public class Generate_AST {
     public static void main(String[] args) throws IOException {
         if (args.length != 1) {
-            System.err.println("Usage: Generate_ATS <OUTPUT DIRECTORY>");
+            System.err.println("Usage: Generate_AST <OUTPUT DIRECTORY>");
             System.exit(64);
         }
 
