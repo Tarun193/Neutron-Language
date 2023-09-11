@@ -6,12 +6,12 @@ public class ASTPrinter implements Expr.Visitor<String> {
 
     @Override
     public String visitBinaryExpr(Expr.Binary expr) {
-        return paranthesis(expr.operator.lexeme, expr.left, expr.right);
+        return ReversePolishNotationPrinting(expr.operator.lexeme, expr.left, expr.right);
     }
 
     @Override
     public String visitGroupingExpr(Expr.Grouping expr) {
-        return paranthesis("grouping", expr.experession);
+        return ReversePolishNotationPrinting("grouping", expr.experession);
     }
 
     @Override
@@ -23,9 +23,12 @@ public class ASTPrinter implements Expr.Visitor<String> {
 
     @Override
     public String visitUnaryExpr(Expr.Unary expr) {
-        return paranthesis(expr.operator.lexeme, expr.right);
+        return ReversePolishNotationPrinting(expr.operator.lexeme, expr.right);
     }
 
+    // These method are just for printing purposes
+    // Both print the tree in differnet order one is part of text
+    // other is exercise 
     private String paranthesis(String name, Expr... exprs) {
         StringBuilder builder = new StringBuilder();
 
@@ -38,13 +41,18 @@ public class ASTPrinter implements Expr.Visitor<String> {
 
         return builder.toString();
     }
+    
+    private String ReversePolishNotationPrinting(String Name, Expr... exprs) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("(");
+        for (Expr expr : exprs) {
+            builder.append(" ");
+            builder.append(expr.accept(this));
+        }
+        builder.append(" )");
+        builder.append(Name);
 
-    public static void main(String[] args) {
-        Expr expr = new Expr.Binary(
-                new Expr.Unary(new Token(TokenType.MINUS, "-", null, 1), new Expr.Literal(123)),
-                new Token(TokenType.STAR, "*", null, 1),
-                new Expr.Grouping(new Expr.Literal(123.4)));
-
-        System.out.println(new ASTPrinter().print(expr));
+        return builder.toString();
     }
+
 }
