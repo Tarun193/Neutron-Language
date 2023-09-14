@@ -2,6 +2,7 @@ import java.util.List;
 
 class Parser {
 
+    private static class ParseError extends RuntimeException{}
     private final List<Token> tokens;
     private int current;
 
@@ -24,6 +25,8 @@ class Parser {
     // rule;
     // expression → equality;
 
+    // Each method here is creating a expression sub-tree and returns it to it's
+    // caller
     private Expr expression() {
         return equality();
     }
@@ -66,6 +69,50 @@ class Parser {
         return expr;
     }
 
+    // factor → unary ( ( "/" | "*" ) unary )* ;
+    private Expr factor() {
+        Expr expr = unary();
+
+        while (match(TokenType.SLASH, TokenType.STAR)) {
+            Token oprator = previous();
+            Expr right = unary();
+            expr = new Expr.Binary(expr, oprator, right);
+        }
+        return expr;
+    }
+
+    // unary → ( "!" | "-" ) unary | primary ;
+    private Expr unary() {
+
+        if (match(TokenType.BANG, TokenType.MINUS)) {
+            Token opreator = previous();
+            Expr right = unary();
+            Expr expr = new Expr.Unary(opreator, right);
+        }
+
+        return primary();
+    }
+
+    // primary → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
+
+    private Expr primary() {
+        if (match(TokenType.FALSE))
+            return new Expr.Literal(false);
+        else if (match(TokenType.TRUE))
+            return new Expr.Literal(true);
+        else if (match(TokenType.NIL))
+            return new Expr.Literal(null);
+        else if (match(TokenType.NUMBER, TokenType.STRING)) {
+            return new Expr.Literal(previous().literal);
+        }
+
+        if (match(TokenType.LEFT_PAREN)) {
+            Expr expr = expression();
+            consume(TokenType.RIGHT_PAREN, "Expected ')' after expression");
+            expr = new Expr.Grouping(expr);
+        }
+    }
+
     // Utility methods;
     private boolean match(TokenType... types) {
         for (TokenType type : types) {
@@ -74,7 +121,6 @@ class Parser {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -106,4 +152,18 @@ class Parser {
     private Token previous() {
         return tokens.get(current - 1);
     }
+
+    // for consuming Right Parenthiese ')';
+    private Token consume(TokenType type, String message){
+        if(check(type)) return advance();
+
+        throw error(peek(), message);
+    }
+
+    // Calling error method
+    private ParseError error(Token token, String message){
+        neutron.error(token, message);
+        return new ParseError();
+    }
+
 }
