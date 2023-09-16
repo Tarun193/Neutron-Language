@@ -21,13 +21,16 @@ class Parser {
     }
     /*
      * GRAMMER RULES:
-     * expression → equality ;
+     * expression → equality;
      * equality → comparison ( ( "!=" | "==" ) comparison )* ;
      * comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
      * term → factor ( ( "-" | "+" ) factor )* ;
      * factor → unary ( ( "/" | "*" ) unary )* ;
      * unary → ( "!" | "-" ) unary | primary ;
      * primary → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
+     * 
+     * Rule which I added for practice question;
+     * expression → equality (',' equality)*;
      */
 
     // For handling expression grammer, it straight forward as it expands equality
@@ -37,7 +40,16 @@ class Parser {
     // Each method here is creating a expression sub-tree and returns it to it's
     // caller
     private Expr expression() {
-        return equality();
+        Expr expr = equality();
+
+        while (match(TokenType.COMMA)) {
+            Token opreator = previous();
+            Expr right = equality();
+            expr = new Expr.Binary(expr, opreator, right);
+        }
+
+        return expr;
+
     }
 
     // equality → comparison ( ( "!=" | "==" ) comparison )* ;
@@ -118,10 +130,10 @@ class Parser {
         if (match(TokenType.LEFT_PAREN)) {
             Expr expr = expression();
             consume(TokenType.RIGHT_PAREN, "Expected ')' after expression");
-            expr = new Expr.Grouping(expr);
+            return new Expr.Grouping(expr);
         }
 
-        throw error(peek(), "Expected expression");
+        throw error(peek(), "Not expected expression");
     }
 
     // Utility methods;

@@ -119,7 +119,6 @@ public class Scanner {
                     while (peek() != '\n' && !isAtEnd())
                         advance();
                 } else {
-                    System.out.println("test:" + c);
                     addToken(TokenType.SLASH);
                 }
                 break;
