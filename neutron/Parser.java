@@ -2,7 +2,9 @@ import java.util.List;
 
 class Parser {
 
-    private static class ParseError extends RuntimeException{}
+    private static class ParseError extends RuntimeException {
+    }
+
     private final List<Token> tokens;
     private int current;
 
@@ -10,6 +12,13 @@ class Parser {
         this.tokens = tokens;
     }
 
+    Expr parse() {
+        try {
+            return expression();
+        } catch (Exception e) {
+            return null;
+        }
+    }
     /*
      * GRAMMER RULES:
      * expression → equality ;
@@ -47,7 +56,7 @@ class Parser {
     private Expr comparison() {
         Expr expr = term();
 
-        while (match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.kes, TokenType.LESS_EQUAL)) {
+        while (match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL)) {
             Token operator = previous();
             Expr right = term();
             expr = new Expr.Binary(expr, operator, right);
@@ -87,7 +96,7 @@ class Parser {
         if (match(TokenType.BANG, TokenType.MINUS)) {
             Token opreator = previous();
             Expr right = unary();
-            Expr expr = new Expr.Unary(opreator, right);
+            return new Expr.Unary(opreator, right);
         }
 
         return primary();
@@ -111,6 +120,8 @@ class Parser {
             consume(TokenType.RIGHT_PAREN, "Expected ')' after expression");
             expr = new Expr.Grouping(expr);
         }
+
+        throw error(peek(), "Expected expression");
     }
 
     // Utility methods;
@@ -154,16 +165,43 @@ class Parser {
     }
 
     // for consuming Right Parenthiese ')';
-    private Token consume(TokenType type, String message){
-        if(check(type)) return advance();
+    private Token consume(TokenType type, String message) {
+        if (check(type))
+            return advance();
 
         throw error(peek(), message);
     }
 
     // Calling error method
-    private ParseError error(Token token, String message){
+    private ParseError error(Token token, String message) {
         neutron.error(token, message);
         return new ParseError();
+    }
+
+    // Method for synchronizing the parser:
+    private void synchronize() {
+        advance();
+        while (!isAtEnd()) {
+            if (previous().type == TokenType.SEMICOLON) {
+                return;
+            }
+
+            switch (peek().type) {
+                case CLASS:
+                case VAR:
+                case FUN:
+                case FOR:
+                case IF:
+                case WHILE:
+                case PRINT:
+                case RETURN:
+                    return;
+            }
+
+            advance();
+
+        }
+
     }
 
 }

@@ -54,10 +54,16 @@ class neutron {
     }
 
     private static void run(String source) {
-        // TODO: Token and Scanner class needs Implementation.
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
-        System.out.println(tokens);
+        Parser parser = new Parser(tokens);
+        Expr expression = parser.parse();
+
+        // Stop if there was a syntax error.
+        if (hadError)
+            return;
+
+        System.out.println(new ASTPrinter().print(expression));
     }
 
     static void error(int line, String message) {
