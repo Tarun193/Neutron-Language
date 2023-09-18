@@ -1,4 +1,15 @@
+
 public class Interpreter implements Expr.Visitor<Object> {
+
+    void interpreter(Expr expression) {
+        try {
+            Object value = evaluate(expression);
+            System.out.println(stringify(value));
+        } catch (RuntimeError error) {
+            neutron.runtimeError(error);
+        }
+
+    }
 
     @Override
     public Object visitLiteralExpr(Expr.Literal literal) {
@@ -16,12 +27,12 @@ public class Interpreter implements Expr.Visitor<Object> {
 
         switch (unary.operator.type) {
             case MINUS:
+                checkNumberOperand(unary.operator, right);
                 return -(Double) right;
 
             case BANG:
                 return !isTruthy(right);
         }
-
         return null;
     }
 
@@ -36,31 +47,38 @@ public class Interpreter implements Expr.Visitor<Object> {
         switch (binary.operator.type) {
             // Comparison operators;
             case GREATER:
+                checkNumberOperand(binary.operator, left, right);
                 return (Double) left > (Double) right;
 
             case GREATER_EQUAL:
+                checkNumberOperand(binary.operator, left, right);
                 return (Double) left >= (Double) right;
 
             case LESS:
+                checkNumberOperand(binary.operator, left, right);
                 return (Double) left < (Double) right;
 
             case LESS_EQUAL:
+                checkNumberOperand(binary.operator, left, right);
                 return (Double) left <= (Double) right;
 
             // Arthimatic operators;
             case MINUS:
+                checkNumberOperand(binary.operator, left, right);
                 return (Double) left - (Double) right;
             case SLASH:
+                checkNumberOperand(binary.operator, left, right);
                 return (Double) left / (Double) right;
             case STAR:
-                return (Double) left / (Double) right;
+                checkNumberOperand(binary.operator, left, right);
+                return (Double) left * (Double) right;
             case PLUS:
                 if (left instanceof Double && right instanceof Double) {
                     return (Double) left + (Double) right;
                 } else if (left instanceof String && right instanceof String) {
                     return (String) left + (String) right;
                 }
-                break;
+                throw new RuntimeError(binary.operator, "Operands must be two numbers or two strings");
 
             // Equality operators
             case BANG_EQUAL:
@@ -97,6 +115,37 @@ public class Interpreter implements Expr.Visitor<Object> {
             return false;
 
         return a.equals(b);
+    }
+
+    // methods for checking weather a operands are number or not
+    private void checkNumberOperand(Token operator, Object right) {
+        if (right instanceof Double)
+            return;
+
+        throw new RuntimeError(operator, "Operand must be a number");
+    }
+
+    private void checkNumberOperand(Token operator, Object left, Object right) {
+        if (right instanceof Double && left instanceof Double)
+            return;
+
+        throw new RuntimeError(operator, "Operands must be a numbers");
+    }
+
+    // Method for converting a value to string so that interpreater can print that
+    // on screen;
+    private String stringify(Object value) {
+        if (value == null)
+            return "nil";
+
+        if (value instanceof Double) {
+            String text = value.toString();
+            if (text.endsWith(".0")) {
+                text = text.substring(0, text.length() - 2);
+            }
+            return text;
+        }
+        return value.toString();
     }
 
 }
