@@ -47,20 +47,36 @@ public class Interpreter implements Expr.Visitor<Object> {
         switch (binary.operator.type) {
             // Comparison operators;
             case GREATER:
-                checkNumberOperand(binary.operator, left, right);
-                return (Double) left > (Double) right;
+                if (left instanceof Double && right instanceof Double) {
+                    return (Double) left > (Double) right;
+                } else if (left instanceof String && right instanceof String) {
+                    return ((String) left).compareTo((String) right) == 1 ? true : false;
+                }
+                throw new RuntimeError(binary.operator, "Both the operands must be Numbers or Strings");
 
             case GREATER_EQUAL:
-                checkNumberOperand(binary.operator, left, right);
-                return (Double) left >= (Double) right;
+                if (left instanceof Double && right instanceof Double) {
+                    return (Double) left >= (Double) right;
+                } else if (left instanceof String && right instanceof String) {
+                    return ((String) left).compareTo((String) right) == -1 ? false : true;
+                }
+                throw new RuntimeError(binary.operator, "Both the operands must be Numbers or Strings");
 
             case LESS:
-                checkNumberOperand(binary.operator, left, right);
-                return (Double) left < (Double) right;
+                if (left instanceof Double && right instanceof Double) {
+                    return (Double) left < (Double) right;
+                } else if (left instanceof String && right instanceof String) {
+                    return ((String) left).compareTo((String) right) == -1 ? true : false;
+                }
+                throw new RuntimeError(binary.operator, "Both the operands must be Numbers or Strings");
 
             case LESS_EQUAL:
-                checkNumberOperand(binary.operator, left, right);
-                return (Double) left <= (Double) right;
+                if (left instanceof Double && right instanceof Double) {
+                    return (Double) left <= (Double) right;
+                } else if (left instanceof String && right instanceof String) {
+                    return ((String) left).compareTo((String) right) == 1 ? false : true;
+                }
+                throw new RuntimeError(binary.operator, "Both the operands must be Numbers or Strings");
 
             // Arthimatic operators;
             case MINUS:
@@ -147,5 +163,4 @@ public class Interpreter implements Expr.Visitor<Object> {
         }
         return value.toString();
     }
-
 }
