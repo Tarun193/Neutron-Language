@@ -1,10 +1,13 @@
+import java.util.List;
 
-public class Interpreter implements Expr.Visitor<Object> {
+public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
-    void interpreter(Expr expression) {
+    void interpreter(List<Stmt> statements) {
         try {
-            Object value = evaluate(expression);
-            System.out.println(stringify(value));
+            for (Stmt statement : statements) {
+                execute(statement);
+            }
+
         } catch (RuntimeError error) {
             neutron.runtimeError(error);
         }
@@ -109,10 +112,28 @@ public class Interpreter implements Expr.Visitor<Object> {
 
     }
 
+    // For statements;
+    @Override
+    public Void visitPrintStmt(Stmt.Print print) {
+        Object value = evaluate(print.expression);
+        System.out.println(stringify(value));
+        return null;
+    }
+
+    @Override
+    public Void visitExpressionStmt(Stmt.Expression expression) {
+        evaluate(expression.expression);
+        return null;
+    }
+
     // Helper method that will send again the expression inside the group '()'
     // again into interpreter visitor class.
     private Object evaluate(Expr expr) {
         return expr.accept(this);
+    }
+
+    private void execute(Stmt stmt) {
+        stmt.accept(this);
     }
 
     // Checks wheather the value is truthy or not

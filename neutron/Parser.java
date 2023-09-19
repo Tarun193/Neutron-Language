@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 class Parser {
@@ -12,9 +13,13 @@ class Parser {
         this.tokens = tokens;
     }
 
-    Expr parse() {
+    List<Stmt> parse() {
         try {
-            return expression();
+            List<Stmt> statements = new ArrayList<>();
+            while (!isAtEnd()) {
+                statements.add(statement());
+            }
+            return statements;
         } catch (Exception e) {
             return null;
         }
@@ -136,6 +141,20 @@ class Parser {
         throw error(peek(), "Not expected expression");
     }
 
+    // exprStmt → print expression ";" ;
+    private Stmt printStatement() {
+        Expr expr = expression();
+        consume(TokenType.SEMICOLON, "Excpected ; after value");
+        return new Stmt.Print(expr);
+    }
+
+    // exprStmt → expression ";" ;
+    private Stmt expressionStatement() {
+        Expr expr = expression();
+        consume(TokenType.SEMICOLON, "Excpected ; after value");
+        return new Stmt.Expression(expr);
+    }
+
     // Utility methods;
     private boolean match(TokenType... types) {
         for (TokenType type : types) {
@@ -188,6 +207,15 @@ class Parser {
     private ParseError error(Token token, String message) {
         neutron.error(token, message);
         return new ParseError();
+    }
+
+    // Function for returning a statement;
+    private Stmt statement() {
+        if (match(TokenType.PRINT))
+            return printStatement();
+        // FOR now any other statement other that print is considered as expression
+        // statement.
+        return expressionStatement();
     }
 
     // Method for synchronizing the parser:

@@ -9,6 +9,17 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Generate_AST {
+
+    /*
+     * For statements
+     * program → statement* EOF ;
+     * 
+     * statement → exprStmt
+     * | printStmt ;
+     * 
+     * exprStmt → expression ";" ;
+     * printStmt → "print" expression ";" ;
+     */
     public static void main(String[] args) throws IOException {
         if (args.length != 1) {
             System.err.println("Usage: Generate_AST <OUTPUT DIRECTORY>");
@@ -27,6 +38,10 @@ public class Generate_AST {
                 "Grouping: Expr experession",
                 "Literal: Object value",
                 "Unary: Token operator, Expr right"));
+
+        defineAst(outputDir, "Stmt", Arrays.asList(
+                "Expression: Expr expression",
+                "Print: Expr expression"));
     }
 
     private static void defineAst(
