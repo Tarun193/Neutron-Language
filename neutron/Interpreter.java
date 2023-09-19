@@ -84,6 +84,9 @@ public class Interpreter implements Expr.Visitor<Object> {
                 return (Double) left - (Double) right;
             case SLASH:
                 checkNumberOperand(binary.operator, left, right);
+                if ((Double) right == 0) {
+                    throw new RuntimeError(binary.operator, "Divide by 0 is not allowed");
+                }
                 return (Double) left / (Double) right;
             case STAR:
                 checkNumberOperand(binary.operator, left, right);
