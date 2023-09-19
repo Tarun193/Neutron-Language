@@ -110,7 +110,7 @@ public class Scanner {
                 break;
 
             case '=':
-                addToken(match('=') ? TokenType.EQUAL : TokenType.EQUAL);
+                addToken(match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL);
                 break;
             // It is a special case as it '//' means comments where as '/' means division
             // operator.
