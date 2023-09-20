@@ -2,6 +2,8 @@ import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
+    private Enviornment enviornment = new Enviornment();
+
     void interpreter(List<Stmt> statements) {
         try {
             for (Stmt statement : statements) {
@@ -110,6 +112,21 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         }
         return null;
 
+    }
+
+    @Override
+    public Object visitVariableExpr(Expr.Variable variable) {
+        return enviornment.get(variable.name);
+    }
+
+    @Override
+    public Void visitVarStmt(Stmt.Var stmt) {
+        Object value = null;
+        if (stmt.initializer != null) {
+            value = evaluate(stmt.initializer);
+        }
+        enviornment.define(stmt.name, value);
+        return null;
     }
 
     // For statements;

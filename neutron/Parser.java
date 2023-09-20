@@ -199,6 +199,7 @@ class Parser {
         if (match(TokenType.EQUAL)) {
             initializer = expression();
         }
+        consume(TokenType.SEMICOLON, "Expected ';' after value");
         return new Stmt.Var(name, initializer);
     }
 
