@@ -160,9 +160,9 @@ public class Scanner {
         addToken(type, null);
     }
 
-    private void addToken(TokenType type, Object litereral) {
+    private void addToken(TokenType type, Object litereal) {
         String text = source.substring(start, current);
-        tokens.add(new Token(type, text, litereral, line));
+        tokens.add(new Token(type, text, litereal, line));
     }
 
     // for matching the new character.
@@ -225,7 +225,7 @@ public class Scanner {
         if (peek() == '.' && isDigit(peekNext())) {
             // Consuming the decimal point.
             advance();
-
+            // Consuming all the number after decimal point.
             while (isDigit(peek())) {
                 advance();
             }

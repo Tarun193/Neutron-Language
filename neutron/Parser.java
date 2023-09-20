@@ -1,3 +1,4 @@
+import java.lang.ProcessBuilder.Redirect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,7 @@ class Parser {
         try {
             List<Stmt> statements = new ArrayList<>();
             while (!isAtEnd()) {
-                statements.add(statement());
+                statements.add(declaration());
             }
             return statements;
         } catch (Exception e) {
@@ -32,10 +33,17 @@ class Parser {
      * term → factor ( ( "-" | "+" ) factor )* ;
      * factor → unary ( ( "/" | "*" ) unary )* ;
      * unary → ( "!" | "-" ) unary | primary ;
-     * primary → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
+     * primary → NUMBER | STRING | "true" | "false" | "nil"
+     * | "(" expression ")" | IDENTIFIER ;
+     * 
+     * program → declaration* EOF ;
+     * declaration → varDecl | statement ;
+     * statement → exprStmt | printStmt;
+     * varDecl → "var" IDENTIFIER ( "=" expression )? ";" ;
      * 
      * Rule which I added for practice question;
      * expression → equality (',' equality)*;
+     * 
      */
 
     // For handling expression grammer, it straight forward as it expands equality
@@ -119,7 +127,8 @@ class Parser {
         return primary();
     }
 
-    // primary → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
+    // primary → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" |
+    // IDENTIFIER ;
 
     private Expr primary() {
         if (match(TokenType.FALSE))
@@ -138,7 +147,19 @@ class Parser {
             return new Expr.Grouping(expr);
         }
 
+        if (match(TokenType.IDENTIFIER)) {
+            return new Expr.Variable(previous());
+        }
         throw error(peek(), "Not expected expression");
+    }
+
+    // Stmt -> printStmt | exprStmt;
+    private Stmt statement() {
+        if (match(TokenType.PRINT))
+            return printStatement();
+        // FOR now any other statement other that print is considered as expression
+        // statement.
+        return expressionStatement();
     }
 
     // exprStmt → print expression ";" ;
@@ -153,6 +174,32 @@ class Parser {
         Expr expr = expression();
         consume(TokenType.SEMICOLON, "Excpected ; after value");
         return new Stmt.Expression(expr);
+    }
+
+    // Function for Declaration rule;
+    // declaration → varDecl | statement ;
+    private Stmt declaration() {
+        try {
+            if (match(TokenType.VAR))
+                return varDeclaration();
+
+            return statement();
+        } catch (ParseError e) {
+            // if any exception occurs what we will do we try to find a syncronization
+            // So that parser a parse again from that point
+            synchronize();
+            return null;
+        }
+    }
+
+    // varDecl -> "var" IDENTIFIER ("=" expression)? ";";
+    private Stmt varDeclaration() {
+        Token name = consume(TokenType.IDENTIFIER, "Expected variable name");
+        Expr initializer = null;
+        if (match(TokenType.EQUAL)) {
+            initializer = expression();
+        }
+        return new Stmt.Var(name, initializer);
     }
 
     // Utility methods;
@@ -207,15 +254,6 @@ class Parser {
     private ParseError error(Token token, String message) {
         neutron.error(token, message);
         return new ParseError();
-    }
-
-    // Function for returning a statement;
-    private Stmt statement() {
-        if (match(TokenType.PRINT))
-            return printStatement();
-        // FOR now any other statement other that print is considered as expression
-        // statement.
-        return expressionStatement();
     }
 
     // Method for synchronizing the parser:
