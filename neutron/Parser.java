@@ -27,7 +27,10 @@ class Parser {
     }
     /*
      * GRAMMER RULES:
-     * expression → equality;
+     * expression → assignment ;
+     * assignment → IDENTIFIER "=" assignment
+     * | comma ;
+     * comma -> equality (',' equality)*;
      * equality → comparison ( ( "!=" | "==" ) comparison )* ;
      * comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
      * term → factor ( ( "-" | "+" ) factor )* ;
@@ -53,6 +56,27 @@ class Parser {
     // Each method here is creating a expression sub-tree and returns it to it's
     // caller
     private Expr expression() {
+        return assignment();
+    }
+
+    private Expr assignment() {
+        Expr expr = comma();
+
+        if (match(TokenType.EQUAL)) {
+            Token equals = previous();
+            Expr value = assignment();
+
+            if (expr instanceof Expr.Variable) {
+                Token name = ((Expr.Variable) expr).name;
+                return new Expr.Assign(name, value);
+            }
+
+            error(equals, "invalid assign target");
+        }
+        return expr;
+    }
+
+    private Expr comma() {
         Expr expr = equality();
 
         while (match(TokenType.COMMA)) {
@@ -62,7 +86,6 @@ class Parser {
         }
 
         return expr;
-
     }
 
     // equality → comparison ( ( "!=" | "==" ) comparison )* ;

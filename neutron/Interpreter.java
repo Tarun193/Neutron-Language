@@ -109,6 +109,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
                 return !isEqual(left, right);
             case EQUAL_EQUAL:
                 return isEqual(left, right);
+
+            case COMMA:
+                if (right instanceof Double) {
+                    return (Double) right;
+                } else if (right instanceof String) {
+                    return (String) left;
+                }
         }
         return null;
 
@@ -118,6 +125,14 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     public Object visitVariableExpr(Expr.Variable variable) {
         return enviornment.get(variable.name);
     }
+
+    @Override
+    public Object visitAssignExpr(Expr.Assign assign) {
+        Object value = evaluate(assign.value);
+        enviornment.assign(assign.name, value);
+        return null;
+    }
+    // Statements;
 
     @Override
     public Void visitVarStmt(Stmt.Var stmt) {

@@ -18,4 +18,12 @@ public class Enviornment {
         throw new RuntimeError(name, "Unkown Indentifier " + name.lexeme + ".");
     }
 
+    void assign(Token key, Object value) {
+        if (values.containsKey(key.lexeme)) {
+            values.put(key.lexeme, value);
+            return;
+        }
+        throw new RuntimeError(key, "variable is not defined.");
+    }
+
 }
