@@ -1,4 +1,3 @@
-import java.lang.ProcessBuilder.Redirect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,14 +37,16 @@ class Parser {
      * unary → ( "!" | "-" ) unary | primary ;
      * primary → NUMBER | STRING | "true" | "false" | "nil"
      * | "(" expression ")" | IDENTIFIER ;
+     * --------- Rule which I added for practice question; ---------------
+     * expression → equality (',' equality)*;
+     * 
+     * ------------- Rules for statements ---------------
      * 
      * program → declaration* EOF ;
+     * block → "{" declaration* "}" ;
      * declaration → varDecl | statement ;
-     * statement → exprStmt | printStmt;
      * varDecl → "var" IDENTIFIER ( "=" expression )? ";" ;
-     * 
-     * Rule which I added for practice question;
-     * expression → equality (',' equality)*;
+     * statement → exprStmt | printStmt | block;
      * 
      */
 
@@ -176,29 +177,6 @@ class Parser {
         throw error(peek(), "Not expected expression");
     }
 
-    // Stmt -> printStmt | exprStmt;
-    private Stmt statement() {
-        if (match(TokenType.PRINT))
-            return printStatement();
-        // FOR now any other statement other that print is considered as expression
-        // statement.
-        return expressionStatement();
-    }
-
-    // exprStmt → print expression ";" ;
-    private Stmt printStatement() {
-        Expr expr = expression();
-        consume(TokenType.SEMICOLON, "Excpected ; after value");
-        return new Stmt.Print(expr);
-    }
-
-    // exprStmt → expression ";" ;
-    private Stmt expressionStatement() {
-        Expr expr = expression();
-        consume(TokenType.SEMICOLON, "Excpected ; after value");
-        return new Stmt.Expression(expr);
-    }
-
     // Function for Declaration rule;
     // declaration → varDecl | statement ;
     private Stmt declaration() {
@@ -215,6 +193,42 @@ class Parser {
         }
     }
 
+    // Stmt -> printStmt | exprStmt;
+    private Stmt statement() {
+        // For print statements
+        if (match(TokenType.PRINT))
+            return printStatement();
+        // For block statements
+        if (match(TokenType.LEFT_BRACE))
+            return blockStatement();
+        return expressionStatement();
+    }
+
+    // exprStmt → print expression ";" ;
+    private Stmt printStatement() {
+        Expr expr = expression();
+        consume(TokenType.SEMICOLON, "Excpected ; after value");
+        return new Stmt.Print(expr);
+    }
+
+    // block → "{" declaration* "}" ;
+    private Stmt blockStatement() {
+        List<Stmt> statements = new ArrayList<>();
+        while (!check(TokenType.RIGHT_BRACE) && !isAtEnd()) {
+            statements.add(declaration());
+        }
+        consume(TokenType.RIGHT_BRACE, "Expected '}' after block");
+        return new Stmt.Block(statements);
+    }
+
+    // exprStmt → expression ";" ;
+    private Stmt expressionStatement() {
+        Expr expr = expression();
+        consume(TokenType.SEMICOLON, "Excpected ; after value");
+        return new Stmt.Expression(expr);
+    }
+
+    // it is an L-value expression.
     // varDecl -> "var" IDENTIFIER ("=" expression)? ";";
     private Stmt varDeclaration() {
         Token name = consume(TokenType.IDENTIFIER, "Expected variable name");

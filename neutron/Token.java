@@ -12,6 +12,6 @@ public class Token {
     }
 
     public String toString() {
-        return this.type + " " + this.lexeme + " " + this.literal;
+        return this.type + " " + this.lexeme + " " + this.line;
     }
 }

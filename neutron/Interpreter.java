@@ -158,6 +158,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         return null;
     }
 
+    public Void visitBlockStmt(Stmt.Block block) {
+        executeBlock(block.statements, new Enviornment(enviornment));
+        return null;
+    }
+
+    // -------------- utility methods -------------------
+
     // Helper method that will send again the expression inside the group '()'
     // again into interpreter visitor class.
     private Object evaluate(Expr expr) {
@@ -166,6 +173,29 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     private void execute(Stmt stmt) {
         stmt.accept(this);
+    }
+
+    private void executeBlock(List<Stmt> statements, Enviornment enviornment) {
+
+        /*
+         * To stores the value of current enviornment, so that we can restore
+         * to current enviornment after execution of block code
+         */
+        Enviornment previous = this.enviornment;
+        try {
+            this.enviornment = enviornment;
+            for (Stmt statement : statements) {
+                execute(statement);
+            }
+        }
+        /*
+         * we restored the enviornment in finally as it is definatly going to happen
+         * even if some error occured
+         */
+
+        finally {
+            this.enviornment = previous;
+        }
     }
 
     // Checks wheather the value is truthy or not

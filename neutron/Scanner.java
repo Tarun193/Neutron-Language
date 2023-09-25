@@ -129,6 +129,9 @@ public class Scanner {
             case ' ':
                 break;
 
+            case '\n':
+                line++;
+                break;
             // Handling string litreals;
             case '"':
                 string();

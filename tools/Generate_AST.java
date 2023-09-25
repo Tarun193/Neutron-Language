@@ -13,10 +13,8 @@ public class Generate_AST {
     /*
      * For statements
      * program → statement* EOF ;
-     * 
      * statement → exprStmt
      * | printStmt ;
-     * 
      * exprStmt → expression ";" ;
      * printStmt → "print" expression ";" ;
      */
@@ -43,6 +41,7 @@ public class Generate_AST {
 
         defineAst(outputDir, "Stmt", Arrays.asList(
                 "Expression: Expr expression",
+                "Block: List<Stmt> statements",
                 "Print: Expr expression",
                 "Var: Token name, Expr initializer"));
     }

@@ -31,6 +31,11 @@ public class ASTPrinter implements Expr.Visitor<String> {
         return expr.name.lexeme;
     }
 
+    @Override
+    public String visitAssignExpr(Expr.Assign expr) {
+        return paranthesis("=", new Expr.Variable(expr.name), expr.value);
+    }
+
     // These method are just for printing purposes
     // Both print the tree in differnet order one is part of text
     // other is exercise
