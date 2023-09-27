@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
@@ -111,8 +112,9 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
                 return isEqual(left, right);
 
             case COMMA:
+                List<Object> values = new ArrayList<>();
                 if (right instanceof Double) {
-                    return (Double) right;
+                    values.add((Double) right);
                 } else if (right instanceof String) {
                     return (String) left;
                 }
@@ -136,11 +138,10 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     @Override
     public Void visitVarStmt(Stmt.Var stmt) {
-        Object value = null;
-        if (stmt.initializer != null) {
-            value = evaluate(stmt.initializer);
+        // Object value = null;
+        for (int i = 0; i < stmt.name.size(); i++) {
+            enviornment.define(stmt.name.get(i), evaluate(stmt.initializers.get(i)));
         }
-        enviornment.define(stmt.name, value);
         return null;
     }
 

@@ -56,16 +56,16 @@ class Parser {
 
     // Each method here is creating a expression sub-tree and returns it to it's
     // caller
-    private Expr expression() {
-        return assignment();
+    private Expr expression(Boolean considerComma) {
+        return assignment(considerComma);
     }
 
-    private Expr assignment() {
-        Expr expr = comma();
+    private Expr assignment(Boolean considerComma) {
+        Expr expr = comma(considerComma);
 
         if (match(TokenType.EQUAL)) {
             Token equals = previous();
-            Expr value = assignment();
+            Expr value = assignment(considerComma);
 
             if (expr instanceof Expr.Variable) {
                 Token name = ((Expr.Variable) expr).name;
@@ -77,7 +77,12 @@ class Parser {
         return expr;
     }
 
-    private Expr comma() {
+    private Expr comma(boolean considerComma) {
+        if (considerComma) {
+            System.out.println(considerComma);
+            return equality();
+        }
+
         Expr expr = equality();
 
         while (match(TokenType.COMMA)) {
@@ -166,7 +171,7 @@ class Parser {
         }
 
         if (match(TokenType.LEFT_PAREN)) {
-            Expr expr = expression();
+            Expr expr = expression(false);
             consume(TokenType.RIGHT_PAREN, "Expected ')' after expression");
             return new Expr.Grouping(expr);
         }
@@ -183,7 +188,6 @@ class Parser {
         try {
             if (match(TokenType.VAR))
                 return varDeclaration();
-
             return statement();
         } catch (ParseError e) {
             // if any exception occurs what we will do we try to find a syncronization
@@ -206,7 +210,7 @@ class Parser {
 
     // exprStmt → print expression ";" ;
     private Stmt printStatement() {
-        Expr expr = expression();
+        Expr expr = expression(false);
         consume(TokenType.SEMICOLON, "Excpected ; after value");
         return new Stmt.Print(expr);
     }
@@ -223,7 +227,7 @@ class Parser {
 
     // exprStmt → expression ";" ;
     private Stmt expressionStatement() {
-        Expr expr = expression();
+        Expr expr = expression(false);
         consume(TokenType.SEMICOLON, "Excpected ; after value");
         return new Stmt.Expression(expr);
     }
@@ -231,13 +235,25 @@ class Parser {
     // it is an L-value expression.
     // varDecl -> "var" IDENTIFIER ("=" expression)? ";";
     private Stmt varDeclaration() {
-        Token name = consume(TokenType.IDENTIFIER, "Expected variable name");
-        Expr initializer = null;
+        List<Token> names = new ArrayList<>();
+        List<Expr> initializer = new ArrayList<>();
+
+        names.add(consume(TokenType.IDENTIFIER, "Expected variable name"));
+        while (match(TokenType.COMMA)) {
+            names.add(consume(TokenType.IDENTIFIER, "Expected variable name"));
+            initializer.add(new Expr.Literal(null));
+        }
         if (match(TokenType.EQUAL)) {
-            initializer = expression();
+            initializer.add(0, expression(true));
+            int i = 1;
+            while (match(TokenType.COMMA)) {
+                System.out.println("test");
+                initializer.add(i, expression(true));
+                i++;
+            }
         }
         consume(TokenType.SEMICOLON, "Expected ';' after value");
-        return new Stmt.Var(name, initializer);
+        return new Stmt.Var(names, initializer);
     }
 
     // Utility methods;

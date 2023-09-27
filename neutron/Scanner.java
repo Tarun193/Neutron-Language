@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Scanner {
     private final String source;
@@ -17,7 +17,6 @@ public class Scanner {
      * while current points at the charcter being considered.
      */
     private static final Map<String, TokenType> keywords;
-
     static {
         keywords = new HashMap<>();
         keywords.put("and", TokenType.AND);
