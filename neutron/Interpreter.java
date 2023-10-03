@@ -139,8 +139,8 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     @Override
     public Void visitVarStmt(Stmt.Var stmt) {
         // Object value = null;
-        for (int i = 0; i < stmt.name.size(); i++) {
-            enviornment.define(stmt.name.get(i), evaluate(stmt.initializers.get(i)));
+        for (int i = 0; i < stmt.names.size(); i++) {
+            enviornment.define(stmt.names.get(i), evaluate(stmt.initializers.get(i)));
         }
         return null;
     }
@@ -164,10 +164,20 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         return null;
     }
 
+    public Void visitIfStmt(Stmt.If stmt) {
+        if (isTruthy(evaluate(stmt.condition))) {
+            execute(stmt.thenBranch);
+        } else if (stmt.elseBranch != null) {
+            execute(stmt.elseBranch);
+        }
+        return null;
+    }
+
     // -------------- utility methods -------------------
 
     // Helper method that will send again the expression inside the group '()'
     // again into interpreter visitor class.
+
     private Object evaluate(Expr expr) {
         return expr.accept(this);
     }

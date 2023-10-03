@@ -46,8 +46,9 @@ class Parser {
      * block → "{" declaration* "}" ;
      * declaration → varDecl | statement ;
      * varDecl → "var" IDENTIFIER ( "=" expression )? ";" ;
-     * statement → exprStmt | printStmt | block;
-     * 
+     * statement → exprStmt | printStmt | block | ifStmt;
+     * ifStmt → "if" "(" expression ")" statement
+     * ( "else" statement )? ;
      */
 
     // For handling expression grammer, it straight forward as it expands equality
@@ -79,7 +80,6 @@ class Parser {
 
     private Expr comma(boolean considerComma) {
         if (considerComma) {
-            System.out.println(considerComma);
             return equality();
         }
 
@@ -199,6 +199,9 @@ class Parser {
 
     // Stmt -> printStmt | exprStmt;
     private Stmt statement() {
+        // For conditional statements
+        if (match(TokenType.IF))
+            return ifStatement();
         // For print statements
         if (match(TokenType.PRINT))
             return printStatement();
@@ -247,13 +250,26 @@ class Parser {
             initializer.add(0, expression(true));
             int i = 1;
             while (match(TokenType.COMMA)) {
-                System.out.println("test");
                 initializer.add(i, expression(true));
                 i++;
             }
         }
         consume(TokenType.SEMICOLON, "Expected ';' after value");
         return new Stmt.Var(names, initializer);
+    }
+
+    // ifStmt → "if" "(" expression ")" statement(block) ("else"statement(block))?;
+    private Stmt ifStatement() {
+        consume(TokenType.LEFT_PAREN, "Expected '(' after if");
+        Expr condition = expression(false);
+        consume(TokenType.RIGHT_PAREN, "Expected ')' after if condition");
+        Stmt thenBranch = statement();
+        Stmt elseBranch = null;
+        if (match(TokenType.ELSE)) {
+            elseBranch = statement();
+        }
+
+        return new Stmt.If(condition, thenBranch, elseBranch);
     }
 
     // Utility methods;
