@@ -1,2 +1,8 @@
 var a = 20;
 
+if(a == 10 and true){
+    print "test";
+}
+else{
+    print "failed test";
+}

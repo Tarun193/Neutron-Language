@@ -28,7 +28,9 @@ class Parser {
      * GRAMMER RULES:
      * expression → assignment ;
      * assignment → IDENTIFIER "=" assignment
-     * | comma ;
+     * | logic_or;
+     * logic_or -> logic_and ( "or" logic_and)*;
+     * logic_and -> comma ("and" comma)*;
      * comma -> equality (',' equality)*;
      * equality → comparison ( ( "!=" | "==" ) comparison )* ;
      * comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
@@ -37,8 +39,9 @@ class Parser {
      * unary → ( "!" | "-" ) unary | primary ;
      * primary → NUMBER | STRING | "true" | "false" | "nil"
      * | "(" expression ")" | IDENTIFIER ;
+     * 
      * --------- Rule which I added for practice question; ---------------
-     * expression → equality (',' equality)*;
+     * comma → equality (',' equality)*;
      * 
      * ------------- Rules for statements ---------------
      * 
@@ -62,7 +65,7 @@ class Parser {
     }
 
     private Expr assignment(Boolean considerComma) {
-        Expr expr = comma(considerComma);
+        Expr expr = or(considerComma);
 
         if (match(TokenType.EQUAL)) {
             Token equals = previous();
@@ -75,6 +78,32 @@ class Parser {
 
             error(equals, "invalid assign target");
         }
+        return expr;
+    }
+
+    // For logic_or -> logic_and ( "or" logic_and)*;
+    private Expr or(Boolean considerComma) {
+        Expr expr = and(considerComma);
+
+        while (match(TokenType.OR)) {
+            Token operator = previous();
+            Expr right = expression(considerComma);
+            expr = new Expr.Logical(expr, operator, right);
+        }
+
+        return expr;
+    }
+
+    // For logic_and -> comma ( "or" comma)*;
+    private Expr and(Boolean considerComma) {
+        Expr expr = comma(considerComma);
+
+        while (match(TokenType.AND)) {
+            Token operator = previous();
+            Expr right = expression(considerComma);
+            expr = new Expr.Logical(expr, operator, right);
+        }
+
         return expr;
     }
 

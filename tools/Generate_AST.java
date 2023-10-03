@@ -37,6 +37,7 @@ public class Generate_AST {
                 "Literal: Object value",
                 "Unary: Token operator, Expr right",
                 "Variable: Token name",
+                "Logical: Expr left, Token operator, Expr right",
                 "Assign: Token name, Expr value"));
 
         defineAst(outputDir, "Stmt", Arrays.asList(

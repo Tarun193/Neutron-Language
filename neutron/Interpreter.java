@@ -124,6 +124,21 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     }
 
     @Override
+    public Object visitLogicalExpr(Expr.Logical logical) {
+        Object left = evaluate(logical.left);
+
+        if (logical.operator.type == TokenType.OR) {
+            if (isTruthy(left))
+                return left;
+        } else {
+            if (!isTruthy(left))
+                return left;
+        }
+
+        return evaluate(logical.right);
+    }
+
+    @Override
     public Object visitVariableExpr(Expr.Variable variable) {
         return enviornment.get(variable.name);
     }
