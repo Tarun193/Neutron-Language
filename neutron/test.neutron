@@ -1,2 +1,5 @@
 var a = 20;
-a  = a + 2;
+while(a >= 0){
+    print a;
+    a = a - 2;
+}

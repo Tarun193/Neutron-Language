@@ -172,7 +172,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     // Handling expression statements
     @Override
     public Void visitExpressionStmt(Stmt.Expression expression) {
-        System.out.println(stringify(evaluate(expression.expression)));
+        Object value = evaluate(expression.expression);
+        if (expression.expression instanceof Expr.Assign) {
+            return null;
+        }
+        System.out.println(stringify(value));
         return null;
     }
 
