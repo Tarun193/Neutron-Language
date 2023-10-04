@@ -161,6 +161,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     }
 
     // For statements;
+    // Handing Print Statments
     @Override
     public Void visitPrintStmt(Stmt.Print print) {
         Object value = evaluate(print.expression);
@@ -168,17 +169,20 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         return null;
     }
 
+    // Handling expression statements
     @Override
     public Void visitExpressionStmt(Stmt.Expression expression) {
         System.out.println(stringify(evaluate(expression.expression)));
         return null;
     }
 
+    // Handling block statements
     public Void visitBlockStmt(Stmt.Block block) {
         executeBlock(block.statements, new Enviornment(enviornment));
         return null;
     }
 
+    // Handling if statements;
     public Void visitIfStmt(Stmt.If stmt) {
         if (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.thenBranch);
@@ -188,6 +192,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         return null;
     }
 
+    // Handling while statements;
+    public Void visitWhileStmt(Stmt.While stmt) {
+        while (isTruthy(evaluate(stmt.condition))) {
+            execute(stmt.stmtBody);
+        }
+        return null;
+    }
     // -------------- utility methods -------------------
 
     // Helper method that will send again the expression inside the group '()'

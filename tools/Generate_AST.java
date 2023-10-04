@@ -46,7 +46,8 @@ public class Generate_AST {
                 "Print: Expr expression",
                 // for multiple ',' separated declaration (not sure about this feature).
                 "Var: List<Token> names, List<Expr> initializers",
-                "If  : Expr condition, Stmt thenBranch, Stmt elseBranch"));
+                "If  : Expr condition, Stmt thenBranch, Stmt elseBranch",
+                "While : Expr condition, Stmt stmtBody"));
     }
 
     private static void defineAst(

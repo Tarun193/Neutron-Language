@@ -30,8 +30,7 @@ class Parser {
      * assignment → IDENTIFIER "=" assignment
      * | logic_or;
      * logic_or -> logic_and ( "or" logic_and)*;
-     * logic_and -> comma ("and" comma)*;
-     * comma -> equality (',' equality)*;
+     * logic_and -> equality ("and" equality)*;
      * equality → comparison ( ( "!=" | "==" ) comparison )* ;
      * comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
      * term → factor ( ( "-" | "+" ) factor )* ;
@@ -40,18 +39,17 @@ class Parser {
      * primary → NUMBER | STRING | "true" | "false" | "nil"
      * | "(" expression ")" | IDENTIFIER ;
      * 
-     * --------- Rule which I added for practice question; ---------------
-     * comma → equality (',' equality)*;
-     * 
      * ------------- Rules for statements ---------------
      * 
      * program → declaration* EOF ;
      * block → "{" declaration* "}" ;
      * declaration → varDecl | statement ;
      * varDecl → "var" IDENTIFIER ( "=" expression )? ";" ;
-     * statement → exprStmt | printStmt | block | ifStmt;
+     * statement → exprStmt | printStmt | block | ifStmt | whileStmt;
      * ifStmt → "if" "(" expression ")" statement
      * ( "else" statement )? ;
+     * 
+     * whileStmt → "while" "(" expression ")" statement ;
      */
 
     // For handling expression grammer, it straight forward as it expands equality
@@ -60,16 +58,16 @@ class Parser {
 
     // Each method here is creating a expression sub-tree and returns it to it's
     // caller
-    private Expr expression(Boolean considerComma) {
-        return assignment(considerComma);
+    private Expr expression() {
+        return assignment();
     }
 
-    private Expr assignment(Boolean considerComma) {
-        Expr expr = or(considerComma);
+    private Expr assignment() {
+        Expr expr = or();
 
         if (match(TokenType.EQUAL)) {
             Token equals = previous();
-            Expr value = assignment(considerComma);
+            Expr value = assignment();
 
             if (expr instanceof Expr.Variable) {
                 Token name = ((Expr.Variable) expr).name;
@@ -82,12 +80,12 @@ class Parser {
     }
 
     // For logic_or -> logic_and ( "or" logic_and)*;
-    private Expr or(Boolean considerComma) {
-        Expr expr = and(considerComma);
+    private Expr or() {
+        Expr expr = and();
 
         while (match(TokenType.OR)) {
             Token operator = previous();
-            Expr right = expression(considerComma);
+            Expr right = expression();
             expr = new Expr.Logical(expr, operator, right);
         }
 
@@ -95,29 +93,13 @@ class Parser {
     }
 
     // For logic_and -> comma ( "or" comma)*;
-    private Expr and(Boolean considerComma) {
-        Expr expr = comma(considerComma);
+    private Expr and() {
+        Expr expr = equality();
 
         while (match(TokenType.AND)) {
             Token operator = previous();
-            Expr right = expression(considerComma);
+            Expr right = expression();
             expr = new Expr.Logical(expr, operator, right);
-        }
-
-        return expr;
-    }
-
-    private Expr comma(boolean considerComma) {
-        if (considerComma) {
-            return equality();
-        }
-
-        Expr expr = equality();
-
-        while (match(TokenType.COMMA)) {
-            Token opreator = previous();
-            Expr right = equality();
-            expr = new Expr.Binary(expr, opreator, right);
         }
 
         return expr;
@@ -200,7 +182,7 @@ class Parser {
         }
 
         if (match(TokenType.LEFT_PAREN)) {
-            Expr expr = expression(false);
+            Expr expr = expression();
             consume(TokenType.RIGHT_PAREN, "Expected ')' after expression");
             return new Expr.Grouping(expr);
         }
@@ -228,6 +210,10 @@ class Parser {
 
     // Stmt -> printStmt | exprStmt;
     private Stmt statement() {
+        // For While loop;
+        if (match(TokenType.WHILE)) {
+            return whileStatement();
+        }
         // For conditional statements
         if (match(TokenType.IF))
             return ifStatement();
@@ -242,7 +228,7 @@ class Parser {
 
     // exprStmt → print expression ";" ;
     private Stmt printStatement() {
-        Expr expr = expression(false);
+        Expr expr = expression();
         consume(TokenType.SEMICOLON, "Excpected ; after value");
         return new Stmt.Print(expr);
     }
@@ -259,7 +245,7 @@ class Parser {
 
     // exprStmt → expression ";" ;
     private Stmt expressionStatement() {
-        Expr expr = expression(false);
+        Expr expr = expression();
         consume(TokenType.SEMICOLON, "Excpected ; after value");
         return new Stmt.Expression(expr);
     }
@@ -276,10 +262,10 @@ class Parser {
             initializer.add(new Expr.Literal(null));
         }
         if (match(TokenType.EQUAL)) {
-            initializer.add(0, expression(true));
+            initializer.add(0, expression());
             int i = 1;
             while (match(TokenType.COMMA)) {
-                initializer.add(i, expression(true));
+                initializer.add(i, expression());
                 i++;
             }
         }
@@ -290,7 +276,7 @@ class Parser {
     // ifStmt → "if" "(" expression ")" statement(block) ("else"statement(block))?;
     private Stmt ifStatement() {
         consume(TokenType.LEFT_PAREN, "Expected '(' after if");
-        Expr condition = expression(false);
+        Expr condition = expression();
         consume(TokenType.RIGHT_PAREN, "Expected ')' after if condition");
         Stmt thenBranch = statement();
         Stmt elseBranch = null;
@@ -299,6 +285,15 @@ class Parser {
         }
 
         return new Stmt.If(condition, thenBranch, elseBranch);
+    }
+
+    // whileStmt → "while" "(" expression ")" statement ;
+    private Stmt whileStatement() {
+        consume(TokenType.LEFT_PAREN, "Expected '(' after while");
+        Expr condition = expression();
+        consume(TokenType.RIGHT_PAREN, "Expected ')' after condition");
+        Stmt stmtBody = statement();
+        return new Stmt.While(condition, stmtBody);
     }
 
     // Utility methods;
