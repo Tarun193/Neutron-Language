@@ -1,4 +1,6 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 class Parser {
@@ -45,11 +47,15 @@ class Parser {
      * block → "{" declaration* "}" ;
      * declaration → varDecl | statement ;
      * varDecl → "var" IDENTIFIER ( "=" expression )? ";" ;
-     * statement → exprStmt | printStmt | block | ifStmt | whileStmt;
+     * statement → exprStmt | printStmt | block | ifStmt | whileStmt | forStmt;
      * ifStmt → "if" "(" expression ")" statement
      * ( "else" statement )? ;
      * 
      * whileStmt → "while" "(" expression ")" statement ;
+     * The statement always ends with semicolan that's why I didn't ';' after
+     * (varDecl | exprStmt | ";")
+     * forStmt -> "for" "(" (varDecl | exprStmt | ";") experssion? ";" experssion
+     * ")" statement;
      */
 
     // For handling expression grammer, it straight forward as it expands equality
@@ -92,7 +98,7 @@ class Parser {
         return expr;
     }
 
-    // For logic_and -> comma ( "or" comma)*;
+    // For logic_and -> equality ( "or" equality)*;
     private Expr and() {
         Expr expr = equality();
 
@@ -210,6 +216,10 @@ class Parser {
 
     // Stmt -> printStmt | exprStmt;
     private Stmt statement() {
+        // For for loop;
+        if (match(TokenType.FOR)) {
+            return forStmt();
+        }
         // For While loop;
         if (match(TokenType.WHILE)) {
             return whileStatement();
@@ -294,6 +304,55 @@ class Parser {
         consume(TokenType.RIGHT_PAREN, "Expected ')' after condition");
         Stmt stmtBody = statement();
         return new Stmt.While(condition, stmtBody);
+    }
+
+    // forStmt -> "for" "(" (varDecl | exprStmt | ";") experssion? ";" experssion
+    // ")" statement;
+    private Stmt forStmt() {
+        consume(TokenType.LEFT_PAREN, "Expected '(' after for");
+
+        // Initializer for the loop;
+        Stmt initializer;
+        if (match(TokenType.SEMICOLON)) {
+            initializer = null;
+        } else if (match(TokenType.VAR)) {
+            initializer = varDeclaration();
+        } else {
+            initializer = expressionStatement();
+        }
+        // Condition for the loop;
+        Expr condition = null;
+        if (!check(TokenType.SEMICOLON)) {
+            condition = expression();
+        }
+        consume(TokenType.SEMICOLON, "Expected ';' after loop condition");
+        //
+        Expr iterator = null;
+        if (!check(TokenType.RIGHT_PAREN)) {
+            iterator = expression();
+        }
+        consume(TokenType.RIGHT_PAREN, "Expected ')' after loop iterator");
+
+        Stmt body = statement();
+        if (iterator != null) {
+            body = new Stmt.Block(
+                    Arrays.asList(
+                            body,
+                            new Stmt.Expression(iterator)));
+        }
+        // now body = { for loop body; iterator; }
+
+        if (condition == null)
+            condition = new Expr.Literal(true);
+        body = new Stmt.While(condition, body);
+        // now body = while(condition){ for loop body; iterator; }
+
+        if (initializer != null) {
+            body = new Stmt.Block(Arrays.asList(initializer, body));
+        }
+        // now body = {initializer; while(condition){ for loop body; iterator; } }
+        // So for loop is an syntatic sugar over while loop.
+        return body;
     }
 
     // Utility methods;
