@@ -3,6 +3,11 @@ import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
+    // When we are encountring break we gonna throw this exception then we will
+    // handle this exception in while
+    private static class BreakException extends RuntimeException {
+    }
+
     private Enviornment enviornment = new Enviornment();
 
     void interpreter(List<Stmt> statements) {
@@ -181,12 +186,14 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     }
 
     // Handling block statements
+    @Override
     public Void visitBlockStmt(Stmt.Block block) {
         executeBlock(block.statements, new Enviornment(enviornment));
         return null;
     }
 
     // Handling if statements;
+    @Override
     public Void visitIfStmt(Stmt.If stmt) {
         if (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.thenBranch);
@@ -197,12 +204,23 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     }
 
     // Handling while statements;
+    @Override
     public Void visitWhileStmt(Stmt.While stmt) {
-        while (isTruthy(evaluate(stmt.condition))) {
-            execute(stmt.stmtBody);
+        try {
+            while (isTruthy(evaluate(stmt.condition))) {
+                execute(stmt.stmtBody);
+            }
+        } catch (BreakException e) {
         }
         return null;
+
     }
+
+    @Override
+    public Void visitBreakStmt(Stmt.Break stmt) {
+        throw new BreakException();
+    }
+
     // -------------- utility methods -------------------
 
     // Helper method that will send again the expression inside the group '()'

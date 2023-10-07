@@ -10,6 +10,7 @@ class Parser {
 
     private final List<Token> tokens;
     private int current;
+    private int loopDepth = 0;
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -216,6 +217,12 @@ class Parser {
 
     // Stmt -> printStmt | exprStmt;
     private Stmt statement() {
+
+        // For Break Stmt;
+        if (match(TokenType.BREAK)) {
+            return breakStmt();
+        }
+
         // For for loop;
         if (match(TokenType.FOR)) {
             return forStmt();
@@ -299,60 +306,79 @@ class Parser {
 
     // whileStmt → "while" "(" expression ")" statement ;
     private Stmt whileStatement() {
-        consume(TokenType.LEFT_PAREN, "Expected '(' after while");
-        Expr condition = expression();
-        consume(TokenType.RIGHT_PAREN, "Expected ')' after condition");
-        Stmt stmtBody = statement();
-        return new Stmt.While(condition, stmtBody);
+        try {
+            loopDepth++;
+            consume(TokenType.LEFT_PAREN, "Expected '(' after while");
+            Expr condition = expression();
+            consume(TokenType.RIGHT_PAREN, "Expected ')' after condition");
+            Stmt stmtBody = statement();
+            return new Stmt.While(condition, stmtBody);
+        } finally {
+            loopDepth--;
+        }
     }
 
     // forStmt -> "for" "(" (varDecl | exprStmt | ";") experssion? ";" experssion
     // ")" statement;
     private Stmt forStmt() {
-        consume(TokenType.LEFT_PAREN, "Expected '(' after for");
+        try {
+            loopDepth++;
+            consume(TokenType.LEFT_PAREN, "Expected '(' after for");
 
-        // Initializer for the loop;
-        Stmt initializer;
-        if (match(TokenType.SEMICOLON)) {
-            initializer = null;
-        } else if (match(TokenType.VAR)) {
-            initializer = varDeclaration();
-        } else {
-            initializer = expressionStatement();
-        }
-        // Condition for the loop;
-        Expr condition = null;
-        if (!check(TokenType.SEMICOLON)) {
-            condition = expression();
-        }
-        consume(TokenType.SEMICOLON, "Expected ';' after loop condition");
-        //
-        Expr iterator = null;
-        if (!check(TokenType.RIGHT_PAREN)) {
-            iterator = expression();
-        }
-        consume(TokenType.RIGHT_PAREN, "Expected ')' after loop iterator");
+            // Initializer for the loop;
+            Stmt initializer;
+            if (match(TokenType.SEMICOLON)) {
+                initializer = null;
+            } else if (match(TokenType.VAR)) {
+                initializer = varDeclaration();
+            } else {
+                initializer = expressionStatement();
+            }
+            // Condition for the loop;
+            Expr condition = null;
+            if (!check(TokenType.SEMICOLON)) {
+                condition = expression();
+            }
+            consume(TokenType.SEMICOLON, "Expected ';' after loop condition");
+            //
+            Expr iterator = null;
+            if (!check(TokenType.RIGHT_PAREN)) {
+                iterator = expression();
+            }
+            consume(TokenType.RIGHT_PAREN, "Expected ')' after loop iterator");
 
-        Stmt body = statement();
-        if (iterator != null) {
-            body = new Stmt.Block(
-                    Arrays.asList(
-                            body,
-                            new Stmt.Expression(iterator)));
-        }
-        // now body = { for loop body; iterator; }
+            Stmt body = statement();
+            if (iterator != null) {
+                body = new Stmt.Block(
+                        Arrays.asList(
+                                body,
+                                new Stmt.Expression(iterator)));
+            }
+            // now body = { for loop body; iterator; }
 
-        if (condition == null)
-            condition = new Expr.Literal(true);
-        body = new Stmt.While(condition, body);
-        // now body = while(condition){ for loop body; iterator; }
+            if (condition == null)
+                condition = new Expr.Literal(true);
+            body = new Stmt.While(condition, body);
+            // now body = while(condition){ for loop body; iterator; }
 
-        if (initializer != null) {
-            body = new Stmt.Block(Arrays.asList(initializer, body));
+            if (initializer != null) {
+                body = new Stmt.Block(Arrays.asList(initializer, body));
+            }
+            // now body = {initializer; while(condition){ for loop body; iterator; } }
+            // So for loop is an syntatic sugar over while loop.
+            return body;
+        } finally {
+            loopDepth--;
         }
-        // now body = {initializer; while(condition){ for loop body; iterator; } }
-        // So for loop is an syntatic sugar over while loop.
-        return body;
+
+    }
+
+    private Stmt breakStmt() {
+        if (loopDepth == 0) {
+            error(previous(), "cannot use a break stmt outside the loop.");
+        }
+        consume(TokenType.SEMICOLON, "';' expected after break");
+        return new Stmt.Break();
     }
 
     // Utility methods;

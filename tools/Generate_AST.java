@@ -47,7 +47,8 @@ public class Generate_AST {
                 // for multiple ',' separated declaration (not sure about this feature).
                 "Var: List<Token> names, List<Expr> initializers",
                 "If  : Expr condition, Stmt thenBranch, Stmt elseBranch",
-                "While : Expr condition, Stmt stmtBody"));
+                "While : Expr condition, Stmt stmtBody",
+                "Break: "));
     }
 
     private static void defineAst(
@@ -69,8 +70,10 @@ public class Generate_AST {
         // for The ATS classes
         for (String type : types) {
             String className = type.split(":")[0].trim();
-            String fields = type.split(":")[1].trim();
-
+            String fields = "";
+            if (type.split(":").length > 1) {
+                fields = type.split(":")[1].trim();
+            }
             defineType(writer, baseName, className, fields);
         }
 
@@ -87,8 +90,10 @@ public class Generate_AST {
         writer.println("    " + className + "(" + fieldList + "){");
         String[] fields = fieldList.split(", ");
         for (String field : fields) {
-            String name = field.split(" ")[1];
-            writer.println("    this." + name + " = " + name + ";");
+            if (field.split(" ").length > 1) {
+                String name = field.split(" ")[1];
+                writer.println("    this." + name + " = " + name + ";");
+            }
         }
 
         writer.println("    }");
@@ -104,10 +109,14 @@ public class Generate_AST {
         // Fields.
         writer.println();
         for (String field : fields) {
-            writer.println("    final " + field + ";");
+            if (!field.equals("")) {
+                writer.println("    final " + field + ";");
+            }
+
         }
 
         writer.println("  }");
+
     }
 
     private static void defineVisitor(

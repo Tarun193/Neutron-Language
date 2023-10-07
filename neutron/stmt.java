@@ -13,6 +13,8 @@ abstract class Stmt {
     R visitIfStmt(If stmt);
 
     R visitWhileStmt(While stmt);
+
+    R visitBreakStmt(Break stmt);
   }
 
   abstract <R> R accept(Visitor<R> visitor);
@@ -101,5 +103,16 @@ abstract class Stmt {
 
     final Expr condition;
     final Stmt stmtBody;
+  }
+
+  static class Break extends Stmt {
+    Break() {
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitBreakStmt(this);
+    }
+
   }
 }
