@@ -150,11 +150,11 @@ class Parser {
         return expr;
     }
 
-    // factor → unary ( ( "/" | "*" ) unary )* ;
+    // factor → unary ( ( "/" | "*" | "%") unary )* ;
     private Expr factor() {
         Expr expr = unary();
 
-        while (match(TokenType.SLASH, TokenType.STAR)) {
+        while (match(TokenType.SLASH, TokenType.STAR, TokenType.MODULUS)) {
             Token oprator = previous();
             Expr right = unary();
             expr = new Expr.Binary(expr, oprator, right);

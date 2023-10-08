@@ -95,7 +95,9 @@ public class Scanner {
             case '*':
                 addToken(TokenType.STAR);
                 break;
-
+            case '%':
+                addToken(TokenType.MODULUS);
+                break;
             // Handling opreators with mutliple caracters.
             case '!':
                 addToken((match('=') ? TokenType.BANG_EQUAL : TokenType.BANG));

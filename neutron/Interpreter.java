@@ -116,13 +116,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
             case EQUAL_EQUAL:
                 return isEqual(left, right);
 
-            case COMMA:
-                List<Object> values = new ArrayList<>();
-                if (right instanceof Double) {
-                    values.add((Double) right);
-                } else if (right instanceof String) {
-                    return (String) left;
+            case MODULUS:
+                if (left instanceof Double && right instanceof Double) {
+                    return (Double) left % (Double) right;
                 }
+                throw new RuntimeError(binary.operator, "invalid operands");
         }
         return null;
 
