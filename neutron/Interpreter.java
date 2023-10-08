@@ -258,7 +258,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     // Checks wheather the value is truthy or not
     // for now only nil and false are truthy.
     private boolean isTruthy(Object object) {
-        if (object == null) {
+        if (object == null || (object instanceof Double && (Double) object == 0)) {
             return false;
         }
         if (object instanceof Boolean)
