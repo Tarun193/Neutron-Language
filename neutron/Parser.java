@@ -195,6 +195,9 @@ class Parser {
         if (!check(TokenType.RIGHT_PAREN)) {
             do {
                 Expr argument = expression();
+                if (arguments.size() >= 255) {
+                    error(peek(), "Can't have more than 255 arguments.");
+                }
                 arguments.add(argument);
             } while (match(TokenType.COMMA));
         }
