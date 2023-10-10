@@ -38,7 +38,9 @@ class Parser {
      * comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
      * term → factor ( ( "-" | "+" ) factor )* ;
      * factor → unary ( ( "/" | "*" ) unary )* ;
-     * unary → ( "!" | "-" ) unary | primary ;
+     * unary → ( "!" | "-" ) unary | call ;
+     * call → primary ( "(" arguments? ")" )*;
+     * arguments → experssion ("," expression)*;
      * primary → NUMBER | STRING | "true" | "false" | "nil"
      * | "(" expression ")" | IDENTIFIER ;
      * 
@@ -172,6 +174,33 @@ class Parser {
         }
 
         return primary();
+    }
+
+    // call → primary ( "(" arguments? ")" )*;
+    private Expr call() {
+        Expr expr = primary();
+
+        while (true) {
+            if (match(TokenType.LEFT_PAREN)) {
+                expr = finishCall(expr);
+            } else {
+                break;
+            }
+        }
+        return expr;
+    }
+
+    private Expr finishCall(Expr callee) {
+        List<Expr> arguments = new ArrayList<>();
+        if (!check(TokenType.RIGHT_PAREN)) {
+            do {
+                Expr argument = expression();
+                arguments.add(argument);
+            } while (match(TokenType.COMMA));
+        }
+
+        Token paren = consume(TokenType.RIGHT_PAREN, "Expected ')' after arguments");
+        return new Expr.Call(callee, paren, arguments);
     }
 
     // primary → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" |
