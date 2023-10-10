@@ -152,6 +152,23 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         enviornment.assign(assign.name, value);
         return null;
     }
+
+    // Visiting function calls;
+    @Override
+    public Object visitCallExpr(Expr.Call call) {
+        Object callee = evaluate(call.calle);
+
+        List<Object> arguments = new ArrayList<>();
+        for (Expr argument : call.arguments) {
+            arguments.add(evaluate(argument));
+        }
+
+        if (!(callee instanceof neutronCallable)) {
+            throw new RuntimeError(call.paren, "Can only call functions and classes");
+        }
+        neutronCallable function = (neutronCallable) callee;
+        return function.call(this, arguments);
+    }
     // Statements;
 
     @Override
