@@ -8,7 +8,30 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     private static class BreakException extends RuntimeException {
     }
 
-    private Enviornment enviornment = new Enviornment();
+    // here enviornment changes when ever the scope changes,
+    // where as global keeps a fixed reference to the outermost scope.
+    final Enviornment global = new Enviornment();
+    private Enviornment enviornment = global;
+
+    Interpreter() {
+        global.define("clock", new neutronCallable() {
+
+            @Override
+            public int arity() {
+                return 0;
+            }
+
+            @Override
+            public Object call(Interpreter interpreter, List<Object> arguments) {
+                return (Double) (System.currentTimeMillis() / 1000.00);
+            }
+
+            @Override
+            public String toString() {
+                return "<native fn>";
+            }
+        });
+    }
 
     void interpreter(List<Stmt> statements) {
         try {

@@ -22,6 +22,10 @@ public class Enviornment {
         values.put(key.lexeme, value);
     }
 
+    void define(String name, Object value) {
+        values.put(name, value);
+    }
+
     Object get(Token name) {
         if (values.containsKey(name.lexeme)) {
             return values.get(name.lexeme);

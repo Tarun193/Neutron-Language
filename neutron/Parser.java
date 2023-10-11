@@ -173,7 +173,7 @@ class Parser {
             return new Expr.Unary(opreator, right);
         }
 
-        return primary();
+        return call();
     }
 
     // call → primary ( "(" arguments? ")" )*;
