@@ -167,6 +167,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
             throw new RuntimeError(call.paren, "Can only call functions and classes");
         }
         neutronCallable function = (neutronCallable) callee;
+        if (arguments.size() != function.arity()) {
+            throw new RuntimeError(call.paren,
+                    "Expected " + function.arity() + " arguments but got " +
+                            arguments.size() + " arguments");
+        }
         return function.call(this, arguments);
     }
     // Statements;
