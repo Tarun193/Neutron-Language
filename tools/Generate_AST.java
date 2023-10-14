@@ -49,7 +49,8 @@ public class Generate_AST {
                 "Var: List<Token> names, List<Expr> initializers",
                 "If  : Expr condition, Stmt thenBranch, Stmt elseBranch",
                 "While : Expr condition, Stmt stmtBody",
-                "Break: "));
+                "Break: ",
+                "Continue: "));
     }
 
     private static void defineAst(
