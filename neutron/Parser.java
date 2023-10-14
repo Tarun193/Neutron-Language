@@ -256,7 +256,7 @@ class Parser {
         }
 
         // For continue Stmt;
-        if(match(TokenType.CONTINUE)){
+        if (match(TokenType.CONTINUE)) {
             return continueStmt();
         }
         // For for loop;
@@ -409,6 +409,7 @@ class Parser {
 
     }
 
+    // For Parsing break statement
     private Stmt breakStmt() {
         if (loopDepth == 0) {
             error(previous(), "cannot use a break stmt outside the loop.");
@@ -417,11 +418,12 @@ class Parser {
         return new Stmt.Break();
     }
 
+    // // For Parsing continue statement
     private Stmt continueStmt() {
         if (loopDepth == 0) {
-            error(previous(), "cannot use a break stmt outside the loop.");
+            error(previous(), "cannot use a continue ststement outside the loop.");
         }
-        consume(TokenType.SEMICOLON, "';' expected after break");
+        consume(TokenType.SEMICOLON, "';' expected after continue");
         return new Stmt.Continue();
     }
 

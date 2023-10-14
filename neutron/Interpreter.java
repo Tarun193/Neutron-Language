@@ -13,6 +13,9 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     final Enviornment global = new Enviornment();
     private Enviornment enviornment = global;
 
+    // Flag for contiune Statement
+    private boolean Continue = false;
+
     Interpreter() {
         global.define("clock", new neutronCallable() {
 
@@ -251,6 +254,9 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     public Void visitWhileStmt(Stmt.While stmt) {
         try {
             while (isTruthy(evaluate(stmt.condition))) {
+                if (Continue) {
+                    Continue = false;
+                }
                 execute(stmt.stmtBody);
             }
         } catch (BreakException e) {
@@ -259,9 +265,17 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     }
 
+    // Method for interpereting break statements
     @Override
     public Void visitBreakStmt(Stmt.Break stmt) {
         throw new BreakException();
+    }
+
+    // Method for interpereting Continue statements
+    @Override
+    public Void visitContinueStmt(Stmt.Continue stmt) {
+        Continue = true;
+        return null;
     }
 
     // -------------- utility methods -------------------
@@ -287,6 +301,9 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         try {
             this.enviornment = enviornment;
             for (Stmt statement : statements) {
+                if (Continue) {
+                    continue;
+                }
                 execute(statement);
             }
         }
