@@ -255,6 +255,10 @@ class Parser {
             return breakStmt();
         }
 
+        // For continue Stmt;
+        if(match(TokenType.CONTINUE)){
+            return continueStmt();
+        }
         // For for loop;
         if (match(TokenType.FOR)) {
             return forStmt();
@@ -411,6 +415,14 @@ class Parser {
         }
         consume(TokenType.SEMICOLON, "';' expected after break");
         return new Stmt.Break();
+    }
+
+    private Stmt continueStmt() {
+        if (loopDepth == 0) {
+            error(previous(), "cannot use a break stmt outside the loop.");
+        }
+        consume(TokenType.SEMICOLON, "';' expected after break");
+        return new Stmt.Continue();
     }
 
     // Utility methods;
