@@ -239,6 +239,8 @@ class Parser {
     // declaration → varDecl | statement ;
     private Stmt declaration() {
         try {
+            if (match(TokenType.FUN))
+                return function("function");
             if (match(TokenType.VAR))
                 return varDeclaration();
             return statement();
@@ -278,7 +280,7 @@ class Parser {
             return printStatement();
         // For block statements
         if (match(TokenType.LEFT_BRACE))
-            return blockStatement();
+            return new Stmt.Block(blockStatement());
         return expressionStatement();
     }
 
@@ -290,13 +292,13 @@ class Parser {
     }
 
     // block → "{" declaration* "}" ;
-    private Stmt blockStatement() {
+    private List<Stmt> blockStatement() {
         List<Stmt> statements = new ArrayList<>();
         while (!check(TokenType.RIGHT_BRACE) && !isAtEnd()) {
             statements.add(declaration());
         }
         consume(TokenType.RIGHT_BRACE, "Expected '}' after block");
-        return new Stmt.Block(statements);
+        return statements;
     }
 
     // exprStmt → expression ";" ;
@@ -430,7 +432,31 @@ class Parser {
         return new Stmt.Continue();
     }
 
-    // Utility methods;
+    // For parsing function declaration;
+    private Stmt function(String Kind) {
+        // consuming function name;
+        Token name = consume(TokenType.IDENTIFIER, "Expected " + Kind + "name.");
+        consume(TokenType.LEFT_PAREN, "Expected '(' after" + Kind + "name.");
+        List<Token> params = new ArrayList<>();
+        if (!check(TokenType.RIGHT_PAREN)) {
+            do {
+                if (params.size() >= 255) {
+                    error(peek(), "Can't have more than 255 parameters.");
+                }
+                params.add(consume(TokenType.IDENTIFIER, "Expected paramater name"));
+
+            } while (match(TokenType.COMMA));
+        }
+        consume(TokenType.RIGHT_PAREN, "Expected ')' after " + Kind + "parameters");
+
+        consume(TokenType.LEFT_BRACE, "Expected '{' before " + Kind + "body");
+
+        List<Stmt> body = blockStatement();
+
+        return new Stmt.Function(name, params, body);
+    }
+
+    // ------------- Utility methods -----------------------;
     private boolean match(TokenType... types) {
         for (TokenType type : types) {
             if (check(type)) {
