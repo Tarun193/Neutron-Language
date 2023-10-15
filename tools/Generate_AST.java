@@ -43,6 +43,7 @@ public class Generate_AST {
 
         defineAst(outputDir, "Stmt", Arrays.asList(
                 "Expression: Expr expression",
+                "Function: Token name, List<Token> params, List<Stmt> body",
                 "Block: List<Stmt> statements",
                 "Print: Expr expression",
                 // for multiple ',' separated declaration (not sure about this feature).

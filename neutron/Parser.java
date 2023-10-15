@@ -48,7 +48,10 @@ class Parser {
      * 
      * program → declaration* EOF ;
      * block → "{" declaration* "}" ;
-     * declaration → varDecl | statement ;
+     * declaration → funDecl | varDecl | statement ;
+     * funDecl -> "fun" function;
+     * function -> IDENTIFIER "("parameters?")" block;
+     * parameter -> INDENTIFIER ("," INDENTIFIER)*;
      * varDecl → "var" IDENTIFIER ( "=" expression )? ";" ;
      * statement → exprStmt | printStmt | block | ifStmt | whileStmt | forStmt;
      * ifStmt → "if" "(" expression ")" statement
