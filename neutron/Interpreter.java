@@ -291,7 +291,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         stmt.accept(this);
     }
 
-    private void executeBlock(List<Stmt> statements, Enviornment enviornment) {
+    public void executeBlock(List<Stmt> statements, Enviornment enviornment) {
 
         /*
          * To stores the value of current enviornment, so that we can restore
