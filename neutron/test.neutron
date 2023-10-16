@@ -1,8 +1,9 @@
-var i = 0;
-while (i < 10){
-     i  = i + 1;
-    if(i == 5){
-        continue;
+fun add(a, b){
+    fun test(){
+        print a;
     }
-    print(i);
+    test();
+    print(a+b);
 }
+
+add(2+3, 5);

@@ -188,17 +188,25 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         for (Expr argument : call.arguments) {
             arguments.add(evaluate(argument));
         }
-
+        // checking whather the evaluated calle is a callable object or not.
         if (!(callee instanceof neutronCallable)) {
             throw new RuntimeError(call.paren, "Can only call functions and classes");
         }
         neutronCallable function = (neutronCallable) callee;
+        // matching the number if arguments with number of parameters for error.
         if (arguments.size() != function.arity()) {
             throw new RuntimeError(call.paren,
                     "Expected " + function.arity() + " arguments but got " +
                             arguments.size() + " arguments");
         }
         return function.call(this, arguments);
+    }
+
+    @Override
+    public Object visitFunctionStmt(Stmt.Function stmt) {
+        neutronCallable function = new neutronFunction(stmt);
+        enviornment.define(stmt.name, function);
+        return null;
     }
     // Statements;
 
@@ -224,7 +232,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     @Override
     public Void visitExpressionStmt(Stmt.Expression expression) {
         Object value = evaluate(expression.expression);
-        if (expression.expression instanceof Expr.Assign) {
+        if (expression.expression instanceof Expr.Assign || expression.expression instanceof Expr.Call) {
             return null;
         }
         System.out.println(stringify(value));
