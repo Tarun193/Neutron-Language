@@ -17,7 +17,12 @@ public class neutronFunction implements neutronCallable {
         for (int i = 0; i < declaration.params.size(); i++) {
             enviornment.define(declaration.params.get(i), arguments.get(i));
         }
-        interpreter.executeBlock(declaration.body, enviornment);
+        try {
+
+            interpreter.executeBlock(declaration.body, enviornment);
+        } catch (Return returnValue) {
+            return returnValue.value;
+        }
         return null;
     }
 
