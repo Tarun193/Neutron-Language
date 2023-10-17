@@ -1,8 +1,4 @@
 fun add(a, b){
-    fun test(){
-        print a;
-    }
-    test();
     print(a+b);
 }
 

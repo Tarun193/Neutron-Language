@@ -51,7 +51,8 @@ public class Generate_AST {
                 "If  : Expr condition, Stmt thenBranch, Stmt elseBranch",
                 "While : Expr condition, Stmt stmtBody",
                 "Break: ",
-                "Continue: "));
+                "Continue: ",
+                "Return: Token keyword, Expr value"));
     }
 
     private static void defineAst(

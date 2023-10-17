@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.sound.sampled.AudioFileFormat.Type;
+
 class Parser {
 
     private static class ParseError extends RuntimeException {
@@ -53,15 +55,22 @@ class Parser {
      * function -> IDENTIFIER "("parameters?")" block;
      * parameter -> INDENTIFIER ("," INDENTIFIER)*;
      * varDecl → "var" IDENTIFIER ( "=" expression )? ";" ;
-     * statement → exprStmt | printStmt | block | ifStmt | whileStmt | forStmt;
-     * ifStmt → "if" "(" expression ")" statement
-     * ( "else" statement )? ;
+     * statement → exprStmt |
+     * printStmt |
+     * block |
+     * ifStmt |
+     * whileStmt |
+     * forStmt |
+     * returnStmt;
      * 
+     * ifStmt → "if" "(" expression ")" statement ( "else" statement )? ;
      * whileStmt → "while" "(" expression ")" statement ;
      * The statement always ends with semicolan that's why I didn't ';' after
      * (varDecl | exprStmt | ";")
      * forStmt -> "for" "(" (varDecl | exprStmt | ";") experssion? ";" experssion
      * ")" statement;
+     * 
+     * returnStmt -> "return" expression? ";";
      */
 
     // For handling expression grammer, it straight forward as it expands equality
@@ -239,6 +248,10 @@ class Parser {
     // declaration → varDecl | statement ;
     private Stmt declaration() {
         try {
+            // For Return Stmts
+            if (match(TokenType.RETURN))
+                return returnStmt();
+            // For function definations
             if (match(TokenType.FUN))
                 return function("function");
             if (match(TokenType.VAR))
@@ -430,6 +443,17 @@ class Parser {
         }
         consume(TokenType.SEMICOLON, "';' expected after continue");
         return new Stmt.Continue();
+    }
+
+    // For return stmts;
+    private Stmt returnStmt() {
+        Token keyword = previous();
+        Expr value = null;
+        if (!check(TokenType.SEMICOLON)) {
+            value = expression();
+        }
+        consume(TokenType.SEMICOLON, "Expecped ';' after expression");
+        return new Stmt.Return(keyword, value);
     }
 
     // For parsing function declaration;
