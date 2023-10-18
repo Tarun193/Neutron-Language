@@ -34,7 +34,7 @@ public class Enviornment {
         // This process happens recursively until we reaches the global scope.
         if (enclosing != null)
             return enclosing.get(name);
-        throw new RuntimeError(name, "Unkown Indentifier " + name.lexeme + ".");
+        throw new RuntimeError(name, "Unkown Identifier " + name.lexeme + ".");
     }
 
     void assign(Token key, Object value) {

@@ -251,7 +251,7 @@ public class Scanner {
     // method for checking given character contains only alphabets and underscore
 
     private boolean isAlpha(char c) {
-        return (c >= 'a' && c <= 'z') || (c >= 'a' && c <= 'z') || (c == '_');
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '_');
     }
 
     private boolean isAlphaNumeric(char c) {

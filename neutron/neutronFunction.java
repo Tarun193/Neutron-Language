@@ -4,16 +4,18 @@ import java.util.List;
 public class neutronFunction implements neutronCallable {
 
     private final Stmt.Function declaration;
+    private final Enviornment closure;
 
-    neutronFunction(Stmt.Function delaration) {
+    neutronFunction(Stmt.Function delaration, Enviornment closure) {
         this.declaration = delaration;
+        this.closure = closure;
     }
 
     // Call method to create new enviorment for each function call
     // and executing it's code using interperater execute block method.
     @Override
     public Object call(Interpreter interpreter, List<Object> arguments) {
-        Enviornment enviornment = new Enviornment(interpreter.global);
+        Enviornment enviornment = new Enviornment(this.closure);
         for (int i = 0; i < declaration.params.size(); i++) {
             enviornment.define(declaration.params.get(i), arguments.get(i));
         }

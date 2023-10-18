@@ -459,8 +459,8 @@ class Parser {
     // For parsing function declaration;
     private Stmt function(String Kind) {
         // consuming function name;
-        Token name = consume(TokenType.IDENTIFIER, "Expected " + Kind + "name.");
-        consume(TokenType.LEFT_PAREN, "Expected '(' after" + Kind + "name.");
+        Token name = consume(TokenType.IDENTIFIER, "Expected " + Kind + " name.");
+        consume(TokenType.LEFT_PAREN, "Expected '(' after " + Kind + " name.");
         List<Token> params = new ArrayList<>();
         if (!check(TokenType.RIGHT_PAREN)) {
             do {

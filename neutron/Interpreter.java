@@ -204,7 +204,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     @Override
     public Object visitFunctionStmt(Stmt.Function stmt) {
-        neutronCallable function = new neutronFunction(stmt);
+        neutronCallable function = new neutronFunction(stmt, enviornment);
         enviornment.define(stmt.name, function);
         return null;
     }
