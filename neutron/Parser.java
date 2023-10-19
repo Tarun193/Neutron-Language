@@ -402,25 +402,13 @@ class Parser {
             consume(TokenType.RIGHT_PAREN, "Expected ')' after loop iterator");
 
             Stmt body = statement();
-            if (iterator != null) {
-                body = new Stmt.Block(
-                        Arrays.asList(
-                                body,
-                                new Stmt.Expression(iterator)));
-            }
-            // now body = { for loop body; iterator; }
-
             if (condition == null)
                 condition = new Expr.Literal(true);
-            body = new Stmt.While(condition, body);
-            // now body = while(condition){ for loop body; iterator; }
-
             if (initializer != null) {
                 body = new Stmt.Block(Arrays.asList(initializer, body));
             }
-            // now body = {initializer; while(condition){ for loop body; iterator; } }
-            // So for loop is an syntatic sugar over while loop.
-            return body;
+
+            return new Stmt.For(initializer, condition, iterator, body);
         } finally {
             loopDepth--;
         }
