@@ -9,6 +9,7 @@ abstract class Stmt{
     R visitVarStmt(Var stmt);
     R visitIfStmt(If stmt);
     R visitWhileStmt(While stmt);
+    R visitForStmt(For stmt);
     R visitBreakStmt(Break stmt);
     R visitContinueStmt(Continue stmt);
     R visitReturnStmt(Return stmt);
@@ -110,6 +111,24 @@ abstract class Stmt{
 
     final Expr condition;
     final Stmt stmtBody;
+  }
+   static class For extends Stmt {
+    For(Stmt intializer, Expr codition, Expr runner, Stmt loopBody){
+    this.intializer = intializer;
+    this.codition = codition;
+    this.runner = runner;
+    this.loopBody = loopBody;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitForStmt(this);
+    }
+
+    final Stmt intializer;
+    final Expr codition;
+    final Expr runner;
+    final Stmt loopBody;
   }
    static class Break extends Stmt {
     Break(){
