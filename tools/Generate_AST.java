@@ -50,7 +50,7 @@ public class Generate_AST {
                 "Var: List<Token> names, List<Expr> initializers",
                 "If  : Expr condition, Stmt thenBranch, Stmt elseBranch",
                 "While : Expr condition, Stmt stmtBody",
-                "For: Stmt intializer, Expr codition, Expr runner, Stmt loopBody",
+                "For: Expr codition, Expr runner, Stmt loopBody",
                 "Break: ",
                 "Continue: ",
                 "Return: Token keyword, Expr value"));

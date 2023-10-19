@@ -105,7 +105,7 @@ public class Scanner {
                 break;
 
             case '<':
-                addToken(match('=') ? TokenType.LESS_EQUAL : TokenType.LESS_EQUAL);
+                addToken(match('=') ? TokenType.LESS_EQUAL : TokenType.LESS);
                 break;
 
             case '>':

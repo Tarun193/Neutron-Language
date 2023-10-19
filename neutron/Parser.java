@@ -404,11 +404,14 @@ class Parser {
             Stmt body = statement();
             if (condition == null)
                 condition = new Expr.Literal(true);
+            if (iterator == null)
+                iterator = new Expr.Literal(null);
+            body = new Stmt.For(condition, iterator, body);
             if (initializer != null) {
                 body = new Stmt.Block(Arrays.asList(initializer, body));
             }
 
-            return new Stmt.For(initializer, condition, iterator, body);
+            return body;
         } finally {
             loopDepth--;
         }

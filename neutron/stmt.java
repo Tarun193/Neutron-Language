@@ -113,8 +113,7 @@ abstract class Stmt{
     final Stmt stmtBody;
   }
    static class For extends Stmt {
-    For(Stmt intializer, Expr codition, Expr runner, Stmt loopBody){
-    this.intializer = intializer;
+    For(Expr codition, Expr runner, Stmt loopBody){
     this.codition = codition;
     this.runner = runner;
     this.loopBody = loopBody;
@@ -125,7 +124,6 @@ abstract class Stmt{
       return visitor.visitForStmt(this);
     }
 
-    final Stmt intializer;
     final Expr codition;
     final Expr runner;
     final Stmt loopBody;

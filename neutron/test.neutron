@@ -1,10 +1,6 @@
-fun createMultiplier(n){
-    fun multiple(m){
-        return n*m;
+for(var i = 0; i < 10; i = i + 1){
+    if(i == 5){
+        continue;
     }
-    return multiple;
+    print i;
 }
-
-var multipleBy3 = createMultiplier(3);
-
-print multipleBy3(10);

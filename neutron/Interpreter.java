@@ -273,6 +273,22 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     }
 
+    // For handling For loop;
+    @Override
+    public Void visitForStmt(Stmt.For stmt) {
+        try {
+            while (isTruthy(evaluate(stmt.codition))) {
+                if (Continue) {
+                    Continue = false;
+                }
+                execute(stmt.loopBody);
+                evaluate(stmt.runner);
+            }
+        } catch (BreakException e) {
+        }
+        return null;
+    }
+
     // Method for interpereting break statements
     @Override
     public Void visitBreakStmt(Stmt.Break stmt) {
