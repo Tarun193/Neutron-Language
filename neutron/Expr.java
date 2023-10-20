@@ -17,6 +17,8 @@ abstract class Expr {
     R visitAssignExpr(Assign expr);
 
     R visitCallExpr(Call expr);
+
+    R visitLambdaExpr(Lambda expr);
   }
 
   abstract <R> R accept(Visitor<R> visitor);
@@ -139,5 +141,20 @@ abstract class Expr {
     final Expr calle;
     final Token paren;
     final List<Expr> arguments;
+  }
+
+  static class Lambda extends Expr {
+    Lambda(List<Token> params, Stmt stmt) {
+      this.params = params;
+      this.stmt = stmt;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitLambdaExpr(this);
+    }
+
+    final List<Token> params;
+    final Stmt stmt;
   }
 }
