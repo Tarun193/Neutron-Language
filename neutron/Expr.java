@@ -144,9 +144,9 @@ abstract class Expr {
   }
 
   static class Lambda extends Expr {
-    Lambda(List<Token> params, Stmt stmt) {
+    Lambda(List<Token> params, Expr expr) {
       this.params = params;
-      this.stmt = stmt;
+      this.expr = expr;
     }
 
     @Override
@@ -155,6 +155,6 @@ abstract class Expr {
     }
 
     final List<Token> params;
-    final Stmt stmt;
+    final Expr expr;
   }
 }

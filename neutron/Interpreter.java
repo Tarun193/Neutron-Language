@@ -203,13 +203,18 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     }
 
     @Override
+    public Object visitLambdaExpr(Expr.Lambda lambda) {
+        return new Lambda(lambda, enviornment);
+    }
+
+    @Override
     public Object visitFunctionStmt(Stmt.Function stmt) {
         neutronCallable function = new neutronFunction(stmt, enviornment);
         enviornment.define(stmt.name, function);
         return null;
     }
-    // Statements;
 
+    // Statements;
     @Override
     public Void visitVarStmt(Stmt.Var stmt) {
         // Object value = null;
@@ -318,6 +323,17 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     private Object evaluate(Expr expr) {
         return expr.accept(this);
+    }
+
+    public Object evaluate(Expr expr, Enviornment enviornment) {
+        Enviornment previous = enviornment;
+        try {
+            this.enviornment = enviornment;
+            return expr.accept(this);
+        } catch (Exception e) {
+            this.enviornment = previous;
+        }
+        return null;
     }
 
     private void execute(Stmt stmt) {

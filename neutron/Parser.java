@@ -1,9 +1,6 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.sound.sampled.AudioFileFormat.Type;
 
 class Parser {
 
@@ -31,7 +28,8 @@ class Parser {
     }
     /*
      * GRAMMER RULES:
-     * expression → assignment ;
+     * expression → lambda;
+     * lambda → ("lambda" paramerters: expression) | assignment;
      * assignment → IDENTIFIER "=" assignment
      * | logic_or;
      * logic_or -> logic_and ( "or" logic_and)*;
@@ -42,6 +40,7 @@ class Parser {
      * factor → unary ( ( "/" | "*" ) unary )* ;
      * unary → ( "!" | "-" ) unary | call ;
      * call → primary ( "(" arguments? ")" )*;
+     * lambda -> "("parameters?")" : ExprStmt | PrintStmt;
      * arguments → experssion ("," expression)*;
      * primary → NUMBER | STRING | "true" | "false" | "nil"
      * | "(" expression ")" | IDENTIFIER ;
@@ -80,6 +79,22 @@ class Parser {
     // Each method here is creating a expression sub-tree and returns it to it's
     // caller
     private Expr expression() {
+        return lambdaExpr();
+    }
+
+    private Expr lambdaExpr() {
+        if (match(TokenType.LAMBDA)) {
+            List<Token> parameters = new ArrayList<>();
+            if (!check(TokenType.COLON)) {
+                do {
+                    Token param = consume(TokenType.IDENTIFIER, "parameter name expected");
+                    parameters.add(param);
+                } while (match(TokenType.COMMA));
+            }
+            consume(TokenType.COLON, "Expected ':' after lambda parameters");
+            Expr expr = expression();
+            return new Expr.Lambda(parameters, expr);
+        }
         return assignment();
     }
 
@@ -245,12 +260,9 @@ class Parser {
     }
 
     // Function for Declaration rule;
-    // declaration → varDecl | statement ;
+    // declaration → funcDecl | varDecl | statement ;
     private Stmt declaration() {
         try {
-            // For Return Stmts
-            if (match(TokenType.RETURN))
-                return returnStmt();
             // For function definations
             if (match(TokenType.FUN))
                 return function("function");
@@ -267,6 +279,9 @@ class Parser {
 
     // Stmt -> printStmt | exprStmt;
     private Stmt statement() {
+        // For Return Stmts
+        if (match(TokenType.RETURN))
+            return returnStmt();
 
         // For Break Stmt;
         if (match(TokenType.BREAK)) {

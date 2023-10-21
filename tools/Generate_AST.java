@@ -40,7 +40,7 @@ public class Generate_AST {
                 "Logical: Expr left, Token operator, Expr right",
                 "Assign: Token name, Expr value",
                 "Call: Expr calle, Token paren, List<Expr> arguments",
-                "Lambda: List<Token> params, Stmt stmt"));
+                "Lambda: List<Token> params, Expr expr"));
 
         defineAst(outputDir, "Stmt", Arrays.asList(
                 "Expression: Expr expression",
