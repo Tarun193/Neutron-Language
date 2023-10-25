@@ -1,5 +1,6 @@
 import java.util.List;
 
+// Lambda class the implements neutronCallable.
 class Lambda implements neutronCallable {
     private final Expr.Lambda expr;
     private final Enviornment closure;
@@ -10,7 +11,8 @@ class Lambda implements neutronCallable {
     }
 
     // Call method to create new enviorment for each function call
-    // and executing it's code using interperater execute block method.
+    // and executing it's code using interperater evaluate method as lambdas have
+    // expressions not Statements;
     @Override
     public Object call(Interpreter interpreter, List<Object> arguments) {
         Enviornment enviornment = new Enviornment(this.closure);

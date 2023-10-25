@@ -1,24 +1,35 @@
 import java.util.List;
 
-abstract class Stmt{
+abstract class Stmt {
   interface Visitor<R> {
     R visitExpressionStmt(Expression stmt);
+
     R visitFunctionStmt(Function stmt);
+
     R visitBlockStmt(Block stmt);
+
     R visitPrintStmt(Print stmt);
+
     R visitVarStmt(Var stmt);
+
     R visitIfStmt(If stmt);
+
     R visitWhileStmt(While stmt);
+
     R visitForStmt(For stmt);
+
     R visitBreakStmt(Break stmt);
+
     R visitContinueStmt(Continue stmt);
+
     R visitReturnStmt(Return stmt);
   }
 
   abstract <R> R accept(Visitor<R> visitor);
-   static class Expression extends Stmt {
-    Expression(Expr expression){
-    this.expression = expression;
+
+  static class Expression extends Stmt {
+    Expression(Expr expression) {
+      this.expression = expression;
     }
 
     @Override
@@ -28,11 +39,12 @@ abstract class Stmt{
 
     final Expr expression;
   }
-   static class Function extends Stmt {
-    Function(Token name, List<Token> params, List<Stmt> body){
-    this.name = name;
-    this.params = params;
-    this.body = body;
+
+  static class Function extends Stmt {
+    Function(Token name, List<Token> params, List<Stmt> body) {
+      this.name = name;
+      this.params = params;
+      this.body = body;
     }
 
     @Override
@@ -44,9 +56,10 @@ abstract class Stmt{
     final List<Token> params;
     final List<Stmt> body;
   }
-   static class Block extends Stmt {
-    Block(List<Stmt> statements){
-    this.statements = statements;
+
+  static class Block extends Stmt {
+    Block(List<Stmt> statements) {
+      this.statements = statements;
     }
 
     @Override
@@ -56,9 +69,10 @@ abstract class Stmt{
 
     final List<Stmt> statements;
   }
-   static class Print extends Stmt {
-    Print(Expr expression){
-    this.expression = expression;
+
+  static class Print extends Stmt {
+    Print(Expr expression) {
+      this.expression = expression;
     }
 
     @Override
@@ -68,10 +82,11 @@ abstract class Stmt{
 
     final Expr expression;
   }
-   static class Var extends Stmt {
-    Var(List<Token> names, List<Expr> initializers){
-    this.names = names;
-    this.initializers = initializers;
+
+  static class Var extends Stmt {
+    Var(List<Token> names, List<Expr> initializers) {
+      this.names = names;
+      this.initializers = initializers;
     }
 
     @Override
@@ -82,11 +97,12 @@ abstract class Stmt{
     final List<Token> names;
     final List<Expr> initializers;
   }
-   static class If extends Stmt {
-    If(Expr condition, Stmt thenBranch, Stmt elseBranch){
-    this.condition = condition;
-    this.thenBranch = thenBranch;
-    this.elseBranch = elseBranch;
+
+  static class If extends Stmt {
+    If(Expr condition, Stmt thenBranch, Stmt elseBranch) {
+      this.condition = condition;
+      this.thenBranch = thenBranch;
+      this.elseBranch = elseBranch;
     }
 
     @Override
@@ -98,10 +114,11 @@ abstract class Stmt{
     final Stmt thenBranch;
     final Stmt elseBranch;
   }
-   static class While extends Stmt {
-    While(Expr condition, Stmt stmtBody){
-    this.condition = condition;
-    this.stmtBody = stmtBody;
+
+  static class While extends Stmt {
+    While(Expr condition, Stmt stmtBody) {
+      this.condition = condition;
+      this.stmtBody = stmtBody;
     }
 
     @Override
@@ -112,11 +129,12 @@ abstract class Stmt{
     final Expr condition;
     final Stmt stmtBody;
   }
-   static class For extends Stmt {
-    For(Expr codition, Expr runner, Stmt loopBody){
-    this.codition = codition;
-    this.runner = runner;
-    this.loopBody = loopBody;
+
+  static class For extends Stmt {
+    For(Expr codition, Expr runner, Stmt loopBody) {
+      this.codition = codition;
+      this.runner = runner;
+      this.loopBody = loopBody;
     }
 
     @Override
@@ -128,8 +146,9 @@ abstract class Stmt{
     final Expr runner;
     final Stmt loopBody;
   }
-   static class Break extends Stmt {
-    Break(){
+
+  static class Break extends Stmt {
+    Break() {
     }
 
     @Override
@@ -138,8 +157,9 @@ abstract class Stmt{
     }
 
   }
-   static class Continue extends Stmt {
-    Continue(){
+
+  static class Continue extends Stmt {
+    Continue() {
     }
 
     @Override
@@ -148,10 +168,11 @@ abstract class Stmt{
     }
 
   }
-   static class Return extends Stmt {
-    Return(Token keyword, Expr value){
-    this.keyword = keyword;
-    this.value = value;
+
+  static class Return extends Stmt {
+    Return(Token keyword, Expr value) {
+      this.keyword = keyword;
+      this.value = value;
     }
 
     @Override
