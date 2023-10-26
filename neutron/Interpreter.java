@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
@@ -12,6 +14,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     // where as global keeps a fixed reference to the outermost scope.
     final Enviornment global = new Enviornment();
     private Enviornment enviornment = global;
+    private final Map<Expr, Integer> locals = new HashMap<>();
 
     // Flag for contiune Statement
     private boolean Continue = false;
@@ -169,7 +172,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     @Override
     public Object visitVariableExpr(Expr.Variable variable) {
-        return enviornment.get(variable.name);
+        return lookUpVariable(variable.name, variable);
     }
 
     @Override
@@ -316,6 +319,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         throw new Return(value);
     }
 
+    // Resolve method for resolving depth which we are getting from semantic
+    // analysis
+    public void resolve(Expr expr, int depth) {
+        locals.put(expr, depth);
+    }
+
     // -------------- utility methods -------------------
 
     // Helper method that will send again the expression inside the group '()'
@@ -416,5 +425,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
             return text;
         }
         return value.toString();
+    }
+
+    // method for looking up for variables according to the resolution;
+    private Object lookUpVariable(Token name, Expr expr) {
+        if (locals.get(expr) != null) {
+        }
+        return global.get(name);
     }
 }
