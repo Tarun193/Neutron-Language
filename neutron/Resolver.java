@@ -28,7 +28,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         }
         if (stmt.initializers.size() != 0) {
             for (Expr initializer : stmt.initializers) {
-                reslove(initializer);
+                resolve(initializer);
             }
         }
         for (Token name : stmt.names) {
@@ -48,26 +48,156 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     // Visiting assignment Expression
     public Void visitAssignExpr(Expr.Assign expr) {
-        reslove(expr);
+        resolve(expr.value);
         resolveLocal(expr, expr.name);
         return null;
     }
+
+    // Resolving function declaration
+    @Override
+    public Void visitFunctionStmt(Stmt.Function stmt) {
+        declare(stmt.name);
+        define(stmt.name);
+
+        resolveFunction(stmt);
+        return null;
+    }
+
+    // resolving expression Statements
+    @Override
+    public Void visitExpressionStmt(Stmt.Expression stmt) {
+        resolve(stmt.expression);
+        return null;
+    }
+
+    // Resolving id statements;
+    @Override
+    public Void visitIfStmt(Stmt.If stmt) {
+        resolve(stmt.condition);
+        resolve(stmt.thenBranch);
+        if (stmt.elseBranch != null)
+            resolve(stmt.elseBranch);
+        return null;
+    }
+
+    // resolving print Stmts
+    @Override
+    public Void visitPrintStmt(Stmt.Print stmt) {
+        resolve(stmt.expression);
+        return null;
+    }
+
+    // Resolving while Stmts.
+    @Override
+    public Void visitWhileStmt(Stmt.While stmt) {
+        resolve(stmt.condition);
+        resolve(stmt.stmtBody);
+        return null;
+    }
+
+    // Resolving for statements
+    @Override
+    public Void visitForStmt(Stmt.For stmt) {
+        resolve(stmt.codition);
+        resolve(stmt.runner);
+        resolve(stmt.loopBody);
+        return null;
+    }
+
+    // Resolving resturn Stmts;
+    @Override
+    public Void visitReturnStmt(Stmt.Return stmt) {
+        if (stmt.value != null) {
+            resolve(stmt.value);
+        }
+
+        return null;
+    }
+
+    // Resolving binary expression.
+    @Override
+    public Void visitBinaryExpr(Expr.Binary expr) {
+        resolve(expr.left);
+        resolve(expr.right);
+        return null;
+    }
+
+    // Resolving method calls
+    public Void visitCallExpr(Expr.Call calle) {
+        resolve(calle.calle);
+
+        for (Expr arguments : calle.arguments) {
+            resolve(arguments);
+        }
+        return null;
+    }
+
+    // Resolving Grouping Expression
+    @Override
+    public Void visitGroupingExpr(Expr.Grouping expr) {
+        resolve(expr.experession);
+        return null;
+    }
+
+    // Resolving Literal Expression
+    @Override
+    public Void visitLiteralExpr(Expr.Literal expr) {
+        return null;
+    }
+
+    // Resolving Logical Expressions
+    @Override
+    public Void visitLogicalExpr(Expr.Logical expr) {
+        resolve(expr.left);
+        resolve(expr.right);
+        return null;
+    }
+
+    // resolving Unary expression
+    @Override
+    public Void visitUnaryExpr(Expr.Unary expr) {
+        resolve(expr.right);
+        return null;
+    }
+
+    // Resloving Lambda Expression
+    @Override
+    public Void visitLambdaExpr(Expr.Lambda lambda) {
+        for (Token param : lambda.params) {
+            declare(param);
+            define(param);
+        }
+        resolve(lambda.expr);
+        return null;
+    }
+
+    // Resolving Break and continue statement;
+    @Override
+    public Void visitBreakStmt(Stmt.Break stmt) {
+        return null;
+    }
+
+    @Override
+    public Void visitContinueStmt(Stmt.Continue stmt) {
+        return null;
+    }
+
     // -------- Utility Methods ----------------
 
     void reslove(List<Stmt> statements) {
         for (Stmt statement : statements) {
-            reslove(statement);
+            resolve(statement);
         }
     }
 
     // Resolving a statement, this method will call visitor method associated with
     // passed statement.
-    private void reslove(Stmt statement) {
+    private void resolve(Stmt statement) {
         statement.accept(this);
     }
 
     // Same as for expressions
-    private void reslove(Expr expr) {
+    private void resolve(Expr expr) {
         expr.accept(this);
     }
 
@@ -102,4 +232,17 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
             }
         }
     }
+
+    // Helper method to resolve function declaration
+    private void resolveFunction(Stmt.Function stmt) {
+        beginScope();
+        for (Token param : stmt.params) {
+            declare(param);
+            define(param);
+        }
+
+        reslove(stmt.body);
+        endScope();
+    }
+
 }

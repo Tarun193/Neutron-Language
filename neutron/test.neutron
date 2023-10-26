@@ -1,0 +1,9 @@
+var a = 10;
+
+var b = lambda : a;
+
+print(b());
+
+a = 20;
+
+print(b());
