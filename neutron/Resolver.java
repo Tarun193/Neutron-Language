@@ -8,8 +8,15 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     private final Interpreter interpreater;
     private final Stack<Map<String, Boolean>> scopes = new Stack<>();
 
+    private FunctionType currentFunctionType = FunctionType.NONE;
+
     Resolver(Interpreter interpreter) {
         this.interpreater = interpreter;
+    }
+
+    private enum FunctionType {
+        NONE,
+        FUNCTION
     }
 
     // Method for resolving a block;
@@ -59,7 +66,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         declare(stmt.name);
         define(stmt.name);
 
-        resolveFunction(stmt);
+        resolveFunction(stmt, FunctionType.FUNCTION);
         return null;
     }
 
@@ -107,6 +114,9 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     // Resolving resturn Stmts;
     @Override
     public Void visitReturnStmt(Stmt.Return stmt) {
+        if (currentFunctionType == FunctionType.NONE) {
+            neutron.error(stmt.keyword, "Can't return from top level-code");
+        }
         if (stmt.value != null) {
             resolve(stmt.value);
         }
@@ -217,6 +227,11 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     private void declare(Token name) {
         if (scopes.isEmpty())
             return;
+
+        Map<String, Boolean> scope = scopes.peek();
+        if (scope.containsKey(name.lexeme)) {
+            neutron.error(name, "Already a variable declared in this scope.");
+        }
         scopes.peek().put(name.lexeme, false);
     }
 
@@ -237,8 +252,10 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     }
 
     // Helper method to resolve function declaration
-    private void resolveFunction(Stmt.Function stmt) {
+    private void resolveFunction(Stmt.Function stmt, FunctionType functionType) {
         beginScope();
+        FunctionType enclosingFunctionType = currentFunctionType;
+        currentFunctionType = functionType;
         for (Token param : stmt.params) {
             declare(param);
             define(param);
@@ -246,6 +263,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
         resolve(stmt.body);
         endScope();
+        this.currentFunctionType = enclosingFunctionType;
     }
 
 }
