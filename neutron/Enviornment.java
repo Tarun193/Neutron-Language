@@ -1,8 +1,6 @@
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.naming.event.EventDirContext;
-
 public class Enviornment {
 
     public final Map<String, Object> values = new HashMap<>();
@@ -59,6 +57,11 @@ public class Enviornment {
     // method for getting variable's value at certain distance.
     public Object getAt(Integer distance, String name) {
         return getAncestor(distance).values.get(name);
+    }
+
+    // Method for assigning variable's value at resolved distance
+    public void assignAt(Integer distance, Token name, Object value) {
+        getAncestor(distance).values.put(name.lexeme, value);
     }
 
     // return the distant enviornment where variable is placed;

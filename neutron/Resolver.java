@@ -16,7 +16,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     @Override
     public Void visitBlockStmt(Stmt.Block stmt) {
         beginScope();
-        reslove(stmt.statements);
+        resolve(stmt.statements);
         endScope();
         return null;
     }
@@ -184,7 +184,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     // -------- Utility Methods ----------------
 
-    void reslove(List<Stmt> statements) {
+    void resolve(List<Stmt> statements) {
         for (Stmt statement : statements) {
             resolve(statement);
         }
@@ -226,7 +226,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     }
 
     private void resolveLocal(Expr expr, Token name) {
-        for (int i = scopes.size() - 1; i >= 0; i++) {
+        for (int i = scopes.size() - 1; i >= 0; i--) {
             if (scopes.get(i).containsKey(name.lexeme)) {
                 interpreater.resolve(expr, scopes.size() - 1 - i);
             }
@@ -241,7 +241,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
             define(param);
         }
 
-        reslove(stmt.body);
+        resolve(stmt.body);
         endScope();
     }
 

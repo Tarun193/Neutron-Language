@@ -178,7 +178,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     @Override
     public Object visitAssignExpr(Expr.Assign assign) {
         Object value = evaluate(assign.value);
-        enviornment.assign(assign.name, value);
+
+        Integer distance = locals.get(assign);
+        if (distance != null) {
+            enviornment.assignAt(distance, assign.name, value);
+        }
+        global.assign(assign.name, value);
         return null;
     }
 
