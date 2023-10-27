@@ -340,14 +340,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     }
 
     public Object evaluate(Expr expr, Enviornment enviornment) {
-        Enviornment previous = enviornment;
+        Enviornment previous = this.enviornment;
         try {
             this.enviornment = enviornment;
             return expr.accept(this);
-        } catch (Exception e) {
+        } finally {
             this.enviornment = previous;
         }
-        return null;
     }
 
     private void execute(Stmt stmt) {
