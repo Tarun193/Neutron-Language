@@ -429,7 +429,9 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     // method for looking up for variables according to the resolution;
     private Object lookUpVariable(Token name, Expr expr) {
-        if (locals.get(expr) != null) {
+        Integer distance = locals.get(expr);
+        if (distance != null) {
+            return enviornment.getAt(distance, name.lexeme);
         }
         return global.get(name);
     }

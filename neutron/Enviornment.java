@@ -1,6 +1,8 @@
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.naming.event.EventDirContext;
+
 public class Enviornment {
 
     public final Map<String, Object> values = new HashMap<>();
@@ -54,4 +56,17 @@ public class Enviornment {
         throw new RuntimeError(key, "variable is not defined.");
     }
 
+    // method for getting variable's value at certain distance.
+    public Object getAt(Integer distance, String name) {
+        return getAncestor(distance).values.get(name);
+    }
+
+    // return the distant enviornment where variable is placed;
+    public Enviornment getAncestor(Integer distance) {
+        Enviornment enviornment = this;
+        for (int i = 0; i < distance; i++) {
+            enviornment = enviornment.enclosing;
+        }
+        return enviornment;
+    }
 }
