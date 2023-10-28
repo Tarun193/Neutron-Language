@@ -52,8 +52,8 @@ public class Generate_AST {
                 "If  : Expr condition, Stmt thenBranch, Stmt elseBranch",
                 "While : Expr condition, Stmt stmtBody",
                 "For: Expr codition, Expr runner, Stmt loopBody",
-                "Break: ",
-                "Continue: ",
+                "Break:",
+                "Continue:",
                 "Return: Token keyword, Expr value"));
     }
 
