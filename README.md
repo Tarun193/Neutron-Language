@@ -1,6 +1,6 @@
 # Neutron Language
 
-Welcome to the Neutron programming language! Neutron is a dummy language that utilizes a Recursive Descent Parser (RDP). This document provides an overview of the grammar rules and constructs of the Neutron language. I am creating this language by reading a book called [crafting interpreters.](https://www.craftinginterpreters.com/) by @munificent.
+Welcome to the Neutron programming language! Neutron is a dummy language that utilizes a Recursive Descent Parser (RDP). This document provides an overview of the grammar rules and constructs of the Neutron language. I am creating this language by reading a book called [crafting interpreters.](https://www.craftinginterpreters.com/) by @munificent. I am actively working on it and going to implement lots of new features.
 
 **Recursive Descent Parser (RDP):** A Recursive Descent Parser (RDP) works by recursively descending through the grammar rules of a language to analyze and process the syntax of the input text.
 
