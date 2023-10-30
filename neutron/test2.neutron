@@ -1,0 +1,40 @@
+box x = 10;
+box y = 5;
+
+// Arithmetic Expressions
+box sum = x + y;
+box difference = x - y;
+box product = x * y;
+box quotient = x / y;
+
+// Comparison Expressions
+box isGreater = x > y;
+box isLessOrEqual = x <= y;
+
+// Logical Expressions
+box isTrue = true;
+box isFalse = false;
+box andResult = isTrue and isFalse;
+box orResult = isTrue or isFalse;
+
+// Equality Expressions
+box isEqual = x == y;
+box isNotEqual = x != y;
+
+// Unary Expressions
+box isNotTrue = !isTrue;
+box negativeX = -x;
+
+// Complex Expressions
+box result = (x + y * 2) > (3 * x - y);
+
+// Function Call
+fun add(a, b) {
+  return a + b;
+}
+
+box addResult = add(x, y);
+
+box sumFun = lambda a, b: a + b;
+
+box sumResult = sumFun(x, y);
