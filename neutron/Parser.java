@@ -53,7 +53,7 @@ class Parser {
      * funDecl -> "fun" function;
      * function -> IDENTIFIER "("parameters?")" block;
      * parameter -> INDENTIFIER ("," INDENTIFIER)*;
-     * varDecl → "var" IDENTIFIER ( "=" expression )? ";" ;
+     * varDecl → "box" IDENTIFIER ( "=" expression )? ";" ;
      * statement → exprStmt |
      * printStmt |
      * block |

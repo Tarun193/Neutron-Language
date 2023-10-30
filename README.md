@@ -44,7 +44,7 @@ Neutron's grammar is defined as follows:
 - **Function Declaration:** `funDecl → "fun" function;`
 - **Function:** function → `IDENTIFIER "("parameters?")" block;`
 - **Parameter:** parameter → `IDENTIFIER ("," IDENTIFIER)*;`
-- **Variable Declaration:** `varDecl → "var" IDENTIFIER ( "=" expression )? ";";`
+- **Variable Declaration:** `varDecl → "box" IDENTIFIER ( "=" expression )? ";";`
 - **Statement:** `statement → exprStmt | printStmt | block | ifStmt | whileStmt | forStmt | returnStmt;`
 - **If Statement:** `ifStmt → "if" "(" expression ")" statement ( "else" statement )?;`
 - **While Statement:** `whileStmt → "while" "(" expression ")" statement;`
