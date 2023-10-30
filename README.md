@@ -67,9 +67,7 @@ Neutron's grammar is defined as follows:
 
 ## Operators
 
-1. **Highest Precedence**:
-
-   - Unary operators:
+1. **Unary operators** ((Left-to-Right Associative):
      - `!` (logical NOT)
      - `-` (negation)
 
