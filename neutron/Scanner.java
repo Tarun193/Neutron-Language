@@ -33,7 +33,7 @@ public class Scanner {
         keywords.put("super", TokenType.SUPER);
         keywords.put("this", TokenType.THIS);
         keywords.put("true", TokenType.TRUE);
-        keywords.put("var", TokenType.VAR);
+        keywords.put("box", TokenType.VAR);
         keywords.put("while", TokenType.WHILE);
         keywords.put("break", TokenType.BREAK);
         keywords.put("continue", TokenType.CONTINUE);

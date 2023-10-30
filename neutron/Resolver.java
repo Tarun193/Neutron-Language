@@ -7,7 +7,6 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     private final Interpreter interpreater;
     private final Stack<Map<String, Boolean>> scopes = new Stack<>();
-
     private FunctionType currentFunctionType = FunctionType.NONE;
 
     Resolver(Interpreter interpreter) {
@@ -243,7 +242,6 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     }
 
     private void resolveLocal(Expr expr, Token name) {
-        System.out.println(name.toString() + " " + scopes.size());
         for (int i = scopes.size() - 1; i >= 0; i--) {
             if (scopes.get(i).containsKey(name.lexeme)) {
                 interpreater.resolve(expr, scopes.size() - 1 - i);

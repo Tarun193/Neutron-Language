@@ -266,8 +266,9 @@ class Parser {
             // For function definations
             if (match(TokenType.FUN))
                 return function("function");
-            if (match(TokenType.VAR))
+            if (match(TokenType.VAR)) {
                 return varDeclaration();
+            }
             return statement();
         } catch (ParseError e) {
             // if any exception occurs what we will do we try to find a syncronization
