@@ -122,6 +122,10 @@ public class Scanner {
             case '=':
                 addToken(match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL);
                 break;
+
+            case '?':
+                addToken(TokenType.TERNERY);
+                break;
             // It is a special case as it '//' means comments where as '/' means division
             // operator.
             case '/':
