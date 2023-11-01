@@ -55,7 +55,9 @@ public class Generate_AST {
                 "For: Expr codition, Expr runner, Stmt loopBody",
                 "Break:",
                 "Continue:",
-                "Return: Token keyword, Expr value"));
+                "Return: Token keyword, Expr value",
+                "Class: Token name, List<Stmt.Function> methods"));
+
     }
 
     private static void defineAst(

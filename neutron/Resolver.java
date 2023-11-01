@@ -201,6 +201,13 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         return null;
     }
 
+    @Override
+    public Void visitClassStmt(Stmt.Class stmt){
+        define(stmt.name);
+        declare(stmt.name);
+        return null;
+    }
+
     // -------- Utility Methods ----------------
 
     void resolve(List<Stmt> statements) {

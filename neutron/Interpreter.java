@@ -334,6 +334,14 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         throw new Return(value);
     }
 
+    // For interperting class Node.
+    @Override
+    public Void visitClassStmt(Stmt.Class stmt) {
+        enviornment.define(stmt.name, null);
+        // going to create a neutronClass Object
+        return null;
+    }
+
     // Resolve method for resolving depth which we are getting from semantic
     // analysis
     public void resolve(Expr expr, int depth) {

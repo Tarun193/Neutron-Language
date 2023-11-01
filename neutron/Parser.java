@@ -27,30 +27,12 @@ class Parser {
         }
     }
     /*
-     * GRAMMER RULES:
-     * expression → lambda;
-     * lambda → ("lambda" paramerters: expression) | assignment;
-     * assignment → IDENTIFIER "=" assignment
-     * | Ternary;
-     * Ternary -> expression "?" expression ":" expression;
-     * logic_or -> logic_and ( "or" logic_and)*;
-     * logic_and -> equality ("and" equality)*;
-     * equality → comparison ( ( "!=" | "==" ) comparison )* ;
-     * comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
-     * term → factor ( ( "-" | "+" ) factor )* ;
-     * factor → unary ( ( "/" | "*" ) unary )* ;
-     * unary → ( "!" | "-" ) unary | call ;
-     * call → primary ( "(" arguments? ")" )*;
-     * lambda -> "("parameters?")" : ExprStmt | PrintStmt;
-     * arguments → experssion ("," expression)*;
-     * primary → NUMBER | STRING | "true" | "false" | "nil"
-     * | "(" expression ")" | IDENTIFIER ;
-     * 
      * ------------- Rules for statements ---------------
      * 
      * program → declaration* EOF ;
      * block → "{" declaration* "}" ;
-     * declaration → funDecl | varDecl | statement ;
+     * declaration → classDecl | funDecl | varDecl | statement ;
+     * classDecl -> "classs" IDENTIFIER "{" functionDecl* "}" ;
      * funDecl -> "fun" function;
      * function -> IDENTIFIER "("parameters?")" block;
      * parameter -> INDENTIFIER ("," INDENTIFIER)*;
@@ -71,6 +53,26 @@ class Parser {
      * ")" statement;
      * 
      * returnStmt -> "return" expression? ";";
+     * 
+     * --------------------- GRAMMER RULES ----------------------
+     * 
+     * expression → lambda;
+     * lambda → ("lambda" paramerters: expression) | assignment;
+     * assignment → IDENTIFIER "=" assignment
+     * | Ternary;
+     * Ternary -> expression "?" expression ":" expression;
+     * logic_or -> logic_and ( "or" logic_and)*;
+     * logic_and -> equality ("and" equality)*;
+     * equality → comparison ( ( "!=" | "==" ) comparison )* ;
+     * comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
+     * term → factor ( ( "-" | "+" ) factor )* ;
+     * factor → unary ( ( "/" | "*" ) unary )* ;
+     * unary → ( "!" | "-" ) unary | call ;
+     * call → primary ( "(" arguments? ")" )*;
+     * lambda -> "("parameters?")" : ExprStmt | PrintStmt;
+     * arguments → experssion ("," expression)*;
+     * primary → NUMBER | STRING | "true" | "false" | "nil"
+     * | "(" expression ")" | IDENTIFIER ;
      */
 
     // For handling expression grammer, it straight forward as it expands equality
@@ -277,6 +279,8 @@ class Parser {
     // declaration → funcDecl | varDecl | statement ;
     private Stmt declaration() {
         try {
+            if (match(TokenType.CLASS))
+                return classDeclarartion();
             // For function definations
             if (match(TokenType.FUN))
                 return function("function");
@@ -499,6 +503,21 @@ class Parser {
         List<Stmt> body = blockStatement();
 
         return new Stmt.Function(name, params, body);
+    }
+
+    // For Handling class declaration;
+    private Stmt classDeclarartion() {
+        Token name = consume(TokenType.IDENTIFIER, "Expected class name after 'class' keyword");
+        consume(TokenType.LEFT_BRACE, "Expected '{' after class name");
+        List<Stmt.Function> methods = new ArrayList<>();
+
+        while (!(check(TokenType.RIGHT_BRACE) || isAtEnd())) {
+            methods.add((Stmt.Function) function("method"));
+        }
+
+        consume(TokenType.RIGHT_BRACE, "Expected '}' after class body.");
+
+        return new Stmt.Class(name, methods);
     }
 
     // ------------- Utility methods -----------------------;
