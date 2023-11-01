@@ -338,7 +338,8 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     @Override
     public Void visitClassStmt(Stmt.Class stmt) {
         enviornment.define(stmt.name, null);
-        // going to create a neutronClass Object
+        neutronClass klass = new neutronClass(stmt.name.lexeme);
+        enviornment.assign(stmt.name, klass);
         return null;
     }
 
