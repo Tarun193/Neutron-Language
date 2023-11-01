@@ -31,7 +31,8 @@ class Parser {
      * expression → lambda;
      * lambda → ("lambda" paramerters: expression) | assignment;
      * assignment → IDENTIFIER "=" assignment
-     * | logic_or;
+     * | Ternary;
+     * Ternary -> expression "?" expression ":" expression;
      * logic_or -> logic_and ( "or" logic_and)*;
      * logic_and -> equality ("and" equality)*;
      * equality → comparison ( ( "!=" | "==" ) comparison )* ;
@@ -99,7 +100,7 @@ class Parser {
     }
 
     private Expr assignment() {
-        Expr expr = or();
+        Expr expr = Ternary();
 
         if (match(TokenType.EQUAL)) {
             Token equals = previous();
@@ -112,6 +113,19 @@ class Parser {
 
             error(equals, "invalid assign target");
         }
+        return expr;
+    }
+
+    private Expr Ternary() {
+        Expr expr = or();
+
+        if (match(TokenType.TERNERY)) {
+            Expr left = expression();
+            consume(TokenType.COLON, "Expected ':' after ternay expression");
+            Expr right = expression();
+            return new Expr.Ternery(expr, left, right);
+        }
+
         return expr;
     }
 

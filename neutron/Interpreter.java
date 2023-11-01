@@ -152,7 +152,16 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
                 throw new RuntimeError(binary.operator, "invalid operands");
         }
         return null;
+    }
 
+    @Override
+    public Object visitTerneryExpr(Expr.Ternery expr) {
+        Object left = evaluate(expr.left);
+        Object right = evaluate(expr.right);
+        if (isTruthy(evaluate(expr.condition))) {
+            return left;
+        }
+        return right;
     }
 
     @Override

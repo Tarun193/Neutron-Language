@@ -193,6 +193,14 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         return null;
     }
 
+    @Override
+    public Void visitTerneryExpr(Expr.Ternery expr) {
+        resolve(expr.condition);
+        resolve(expr.left);
+        resolve(expr.right);
+        return null;
+    }
+
     // -------- Utility Methods ----------------
 
     void resolve(List<Stmt> statements) {
