@@ -23,6 +23,8 @@ abstract class Expr {
     R visitTerneryExpr(Ternery expr);
 
     R visitGetExpr(Get expr);
+
+    R visitSetExpr(Set expr);
   }
 
   abstract <R> R accept(Visitor<R> visitor);
@@ -192,5 +194,22 @@ abstract class Expr {
 
     final Expr Object;
     final Token name;
+  }
+
+  static class Set extends Expr {
+    Set(Expr Object, Token name, Expr value) {
+      this.Object = Object;
+      this.name = name;
+      this.value = value;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitSetExpr(this);
+    }
+
+    final Expr Object;
+    final Token name;
+    final Expr value;
   }
 }

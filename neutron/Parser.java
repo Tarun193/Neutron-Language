@@ -58,7 +58,7 @@ class Parser {
      * 
      * expression → lambda;
      * lambda → ("lambda" paramerters: expression) | assignment;
-     * assignment → IDENTIFIER "=" assignment
+     * assignment → (call ".")? IDENTIFIER "=" assignment;
      * | Ternary;
      * Ternary -> expression "?" expression ":" expression;
      * logic_or -> logic_and ( "or" logic_and)*;
@@ -111,6 +111,12 @@ class Parser {
             if (expr instanceof Expr.Variable) {
                 Token name = ((Expr.Variable) expr).name;
                 return new Expr.Assign(name, value);
+            }
+
+            if (expr instanceof Expr.Get) {
+                Expr.Get get = (Expr.Get) expr;
+                return new Expr.Set(get.Object, get.name, value);
+
             }
 
             error(equals, "invalid assign target");
@@ -226,7 +232,7 @@ class Parser {
         while (true) {
             if (match(TokenType.LEFT_PAREN)) {
                 expr = finishCall(expr);
-            } else if (match(TokenType.RIGHT_BRACE)) {
+            } else if (match(TokenType.DOT)) {
                 Token name = consume(TokenType.IDENTIFIER, "Expected property name after '.'.");
                 expr = new Expr.Get(expr, name);
             } else {

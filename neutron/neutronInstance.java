@@ -21,4 +21,8 @@ public class neutronInstance {
         // If instance doesn't have property with name.
         throw new RuntimeError(name, "Undefined property " + name.lexeme + ".");
     }
+
+    public void set(Token name, Object value) {
+        fields.put(name.lexeme, value);
+    }
 }

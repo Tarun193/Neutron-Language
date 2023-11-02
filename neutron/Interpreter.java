@@ -343,7 +343,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         return null;
     }
 
-    // For resolving get expression
+    // For interpreting get expression
     @Override
     public Object visitGetExpr(Expr.Get get) {
         Object object = evaluate(get.Object);
@@ -352,6 +352,16 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         }
 
         throw new RuntimeError(get.name, "Only instance can have properties");
+    }
+
+    @Override
+    public Void visitSetExpr(Expr.Set expr) {
+        Object object = evaluate(expr.Object);
+        if (object instanceof neutronInstance) {
+            ((neutronInstance) object).set(expr.name, evaluate(expr));
+            return null;
+        }
+        throw new RuntimeError(expr.name, "Only instance can have properties");
     }
 
     // Resolve method for resolving depth which we are getting from semantic
