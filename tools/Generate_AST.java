@@ -41,7 +41,8 @@ public class Generate_AST {
                 "Assign: Token name, Expr value",
                 "Call: Expr calle, Token paren, List<Expr> arguments",
                 "Lambda: List<Token> params, Expr expr",
-                "Ternery: Expr condition, Expr left, Expr right"));
+                "Ternery: Expr condition, Expr left, Expr right",
+                "Get: Expr Object, Token name"));
 
         defineAst(outputDir, "Stmt", Arrays.asList(
                 "Expression: Expr expression",

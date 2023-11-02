@@ -1,5 +1,6 @@
 import java.util.List;
 
+// it's an java repersentation of neutron classes.
 public class neutronClass implements neutronCallable {
     final String name;
 
@@ -12,9 +13,12 @@ public class neutronClass implements neutronCallable {
         return "Class " + this.name;
     }
 
+    // When a class is called it will create an instance of that class using, neutron instance class.
+    // neutron instance class is java repersentation of neutron instances.
     @Override
     public Object call(Interpreter interpreter, List<Object> arguments) {
-        return 1;
+        neutronInstance instance = new neutronInstance(this);
+        return instance;
     }
 
     @Override

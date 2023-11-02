@@ -343,12 +343,22 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         return null;
     }
 
+    // For resolving get expression
+    @Override
+    public Object visitGetExpr(Expr.Get get) {
+        Object object = evaluate(get.Object);
+        if (object instanceof neutronInstance) {
+            return ((neutronInstance) object).get(get.name);
+        }
+
+        throw new RuntimeError(get.name, "Only instance can have properties");
+    }
+
     // Resolve method for resolving depth which we are getting from semantic
     // analysis
     public void resolve(Expr expr, int depth) {
         locals.put(expr, depth);
     }
-
     // -------------- utility methods -------------------
 
     // Helper method that will send again the expression inside the group '()'

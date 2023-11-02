@@ -202,12 +202,20 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Void visitClassStmt(Stmt.Class stmt){
+    public Void visitClassStmt(Stmt.Class stmt) {
         define(stmt.name);
         declare(stmt.name);
         return null;
     }
 
+    @Override
+    public Void visitGetExpr(Expr.Get expr) {
+        // An properties are dynamic that why we are not resolving them.
+        resolve(expr.Object);
+        return null;
+    }
+
+    
     // -------- Utility Methods ----------------
 
     void resolve(List<Stmt> statements) {

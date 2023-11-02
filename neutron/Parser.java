@@ -68,7 +68,7 @@ class Parser {
      * term → factor ( ( "-" | "+" ) factor )* ;
      * factor → unary ( ( "/" | "*" ) unary )* ;
      * unary → ( "!" | "-" ) unary | call ;
-     * call → primary ( "(" arguments? ")" )*;
+     * call → primary ( "(" arguments? ")" | '.' IDENTIFIER)*;
      * lambda -> "("parameters?")" : ExprStmt | PrintStmt;
      * arguments → experssion ("," expression)*;
      * primary → NUMBER | STRING | "true" | "false" | "nil"
@@ -226,6 +226,9 @@ class Parser {
         while (true) {
             if (match(TokenType.LEFT_PAREN)) {
                 expr = finishCall(expr);
+            } else if (match(TokenType.RIGHT_BRACE)) {
+                Token name = consume(TokenType.IDENTIFIER, "Expected property name after '.'.");
+                expr = new Expr.Get(expr, name);
             } else {
                 break;
             }
