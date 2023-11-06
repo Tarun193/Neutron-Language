@@ -22,7 +22,7 @@ public class neutronInstance {
         neutronFunction method = klass.findMethod(name.lexeme);
 
         if (method != null)
-            return method;
+            return method.bind(this);
         // If instance doesn't have property with name.
         throw new RuntimeError(name, "Undefined property " + name.lexeme + ".");
     }

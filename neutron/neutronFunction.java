@@ -38,4 +38,10 @@ public class neutronFunction implements neutronCallable {
     public String toString() {
         return "<fn " + declaration.name.lexeme + " >";
     }
+
+    public neutronFunction bind(neutronInstance instance) {
+        Enviornment enviornment = new Enviornment(closure);
+        enviornment.define("this", instance);
+        return new neutronFunction(declaration, enviornment);
+    }
 }

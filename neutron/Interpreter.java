@@ -255,7 +255,9 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     @Override
     public Void visitExpressionStmt(Stmt.Expression expression) {
         Object value = evaluate(expression.expression);
-        if (expression.expression instanceof Expr.Assign || expression.expression instanceof Expr.Call) {
+        if (expression.expression instanceof Expr.Assign
+                || expression.expression instanceof Expr.Call
+                || expression.expression instanceof Expr.Set) {
             return null;
         }
         System.out.println(stringify(value));
@@ -366,10 +368,16 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     public Void visitSetExpr(Expr.Set expr) {
         Object object = evaluate(expr.Object);
         if (object instanceof neutronInstance) {
-            ((neutronInstance) object).set(expr.name, evaluate(expr));
+            ((neutronInstance) object).set(expr.name, evaluate(expr.value));
             return null;
         }
         throw new RuntimeError(expr.name, "Only instance can have properties");
+    }
+
+    // Interpreting this expression;
+    @Override
+    public Object visitThisExpr(Expr.This expr) {
+        return lookUpVariable(expr.Keyword, expr);
     }
 
     // Resolve method for resolving depth which we are getting from semantic
