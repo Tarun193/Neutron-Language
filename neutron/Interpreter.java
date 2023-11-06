@@ -338,7 +338,15 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     @Override
     public Void visitClassStmt(Stmt.Class stmt) {
         enviornment.define(stmt.name, null);
-        neutronClass klass = new neutronClass(stmt.name.lexeme);
+
+        // creating an hashmap for storing all the methods of the class.
+        Map<String, neutronFunction> methods = new HashMap<>();
+        for (Stmt.Function method : stmt.methods) {
+            neutronFunction function = new neutronFunction(method, enviornment);
+            methods.put(method.name.lexeme, function);
+
+        }
+        neutronClass klass = new neutronClass(stmt.name.lexeme, methods);
         enviornment.assign(stmt.name, klass);
         return null;
     }

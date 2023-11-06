@@ -3,7 +3,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-
 public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     private final Interpreter interpreater;
@@ -16,7 +15,8 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     private enum FunctionType {
         NONE,
-        FUNCTION
+        FUNCTION,
+        METHOD
     }
 
     // Method for resolving a block;
@@ -205,6 +205,11 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     @Override
     public Void visitClassStmt(Stmt.Class stmt) {
         define(stmt.name);
+
+        for (Stmt.Function method : stmt.methods) {
+            resolveFunction(method, currentFunctionType.METHOD);
+        }
+
         declare(stmt.name);
         return null;
     }
