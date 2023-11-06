@@ -29,4 +29,12 @@ public class neutronClass implements neutronCallable {
     public int arity() {
         return 0;
     }
+
+    neutronFunction findMethod(String name) {
+        if (methods.containsKey(name)) {
+            return methods.get(name);
+        }
+
+        return null;
+    }
 }

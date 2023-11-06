@@ -18,6 +18,11 @@ public class neutronInstance {
         if (fields.containsKey(name.lexeme)) {
             return fields.get(name.lexeme);
         }
+        // If the given token is not an state, it can be method then
+        neutronFunction method = klass.findMethod(name.lexeme);
+
+        if (method != null)
+            return method;
         // If instance doesn't have property with name.
         throw new RuntimeError(name, "Undefined property " + name.lexeme + ".");
     }
