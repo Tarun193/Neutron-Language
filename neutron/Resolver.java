@@ -19,6 +19,13 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         METHOD
     }
 
+    private enum ClassType {
+        None,
+        CLASS
+    }
+
+    private ClassType currentEnclosingClass = ClassType.None;
+
     // Method for resolving a block;
     @Override
     public Void visitBlockStmt(Stmt.Block stmt) {
@@ -205,6 +212,10 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     @Override
     public Void visitClassStmt(Stmt.Class stmt) {
         define(stmt.name);
+        declare(stmt.name);
+
+        ClassType enclosingClass = currentEnclosingClass;
+        currentEnclosingClass = ClassType.CLASS;
 
         beginScope();
         scopes.peek().put("this", true);
@@ -212,7 +223,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
             resolveFunction(method, currentFunctionType.METHOD);
         }
         endScope();
-        declare(stmt.name);
+        currentEnclosingClass = enclosingClass;
         return null;
     }
 
@@ -233,6 +244,9 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     // Resolving this expression;
     @Override
     public Void visitThisExpr(Expr.This expr) {
+        if (currentEnclosingClass == ClassType.None) {
+            neutron.error(expr.Keyword, "Cannot use 'this' outside any class.");
+        }
         resolveLocal(expr, expr.Keyword);
         return null;
     }
