@@ -227,7 +227,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     @Override
     public Object visitFunctionStmt(Stmt.Function stmt) {
-        neutronCallable function = new neutronFunction(stmt, enviornment);
+        neutronCallable function = new neutronFunction(stmt, enviornment, false);
         enviornment.define(stmt.name, function);
         return null;
     }
@@ -344,7 +344,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         // creating an hashmap for storing all the methods of the class.
         Map<String, neutronFunction> methods = new HashMap<>();
         for (Stmt.Function method : stmt.methods) {
-            neutronFunction function = new neutronFunction(method, enviornment);
+            neutronFunction function = new neutronFunction(method, enviornment, method.name.lexeme.equals("init"));
             methods.put(method.name.lexeme, function);
 
         }

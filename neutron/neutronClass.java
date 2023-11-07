@@ -22,11 +22,18 @@ public class neutronClass implements neutronCallable {
     @Override
     public Object call(Interpreter interpreter, List<Object> arguments) {
         neutronInstance instance = new neutronInstance(this);
+        neutronFunction initializer = findMethod("init");
+        if (initializer != null) {
+            initializer.bind(instance).call(interpreter, arguments);
+        }
         return instance;
     }
 
     @Override
     public int arity() {
+        neutronFunction initializer = findMethod("init");
+        if (initializer != null)
+            return initializer.arity();
         return 0;
     }
 

@@ -1,4 +1,9 @@
 class Cake {
+  init(){
+    this.flavor = "vanilla";
+  
+  }
+
   taste() {
     box adjective = "delicious";
     print "The " + this.flavor + " cake is " + adjective + "!";
@@ -6,5 +11,5 @@ class Cake {
 }
 
 box cake = Cake();
-cake.flavor = "German chocolate";
 cake.taste(); // Prints "The German chocolate cake is delicious!".
+print cake.init();

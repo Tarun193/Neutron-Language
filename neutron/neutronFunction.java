@@ -5,10 +5,12 @@ public class neutronFunction implements neutronCallable {
 
     private final Stmt.Function declaration;
     private final Enviornment closure;
+    private final Boolean isInitializer;
 
-    neutronFunction(Stmt.Function delaration, Enviornment closure) {
+    neutronFunction(Stmt.Function delaration, Enviornment closure, Boolean isInitializer) {
         this.declaration = delaration;
         this.closure = closure;
+        this.isInitializer = isInitializer;
     }
 
     // Call method to create new enviorment for each function call
@@ -24,6 +26,11 @@ public class neutronFunction implements neutronCallable {
             interpreter.executeBlock(declaration.body, enviornment);
         } catch (Return returnValue) {
             return returnValue.value;
+        }
+
+        // If we are calling an initializer, I want to return the object
+        if (isInitializer) {
+            return closure.getAt(0, "this");
         }
         return null;
     }
@@ -42,6 +49,6 @@ public class neutronFunction implements neutronCallable {
     public neutronFunction bind(neutronInstance instance) {
         Enviornment enviornment = new Enviornment(closure);
         enviornment.define("this", instance);
-        return new neutronFunction(declaration, enviornment);
+        return new neutronFunction(declaration, enviornment, isInitializer);
     }
 }
