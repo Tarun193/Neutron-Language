@@ -16,7 +16,8 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     private enum FunctionType {
         NONE,
         FUNCTION,
-        METHOD
+        METHOD,
+        INITIALIZER
     }
 
     private enum ClassType {
@@ -125,6 +126,9 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
             neutron.error(stmt.keyword, "Can't return from top level-code");
         }
         if (stmt.value != null) {
+            if (currentFunctionType == FunctionType.INITIALIZER) {
+                neutron.error(stmt.keyword, "Can't return from constructor");
+            }
             resolve(stmt.value);
         }
 
@@ -312,6 +316,9 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         beginScope();
         FunctionType enclosingFunctionType = currentFunctionType;
         currentFunctionType = functionType;
+        if (stmt.name.lexeme.equals("init")) {
+            currentFunctionType = FunctionType.INITIALIZER;
+        }
         for (Token param : stmt.params) {
             declare(param);
             define(param);

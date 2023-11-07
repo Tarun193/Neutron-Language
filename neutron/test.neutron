@@ -1,6 +1,7 @@
 class Cake {
   init(){
     this.flavor = "vanilla";
+    return "hello";
   
   }
 
