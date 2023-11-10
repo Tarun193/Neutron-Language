@@ -1,8 +1,10 @@
 class Cake {
   init(){
     this.flavor = "vanilla";
-    return "hello";
-  
+  }
+
+  class test(n){
+    return n*n;
   }
 
   taste() {
@@ -13,4 +15,4 @@ class Cake {
 
 box cake = Cake();
 cake.taste(); // Prints "The German chocolate cake is delicious!".
-print cake.init();
+print Cake.test(4);

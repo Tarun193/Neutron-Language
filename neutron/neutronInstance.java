@@ -5,6 +5,9 @@ public class neutronInstance {
     private neutronClass klass;
     private final Map<String, Object> fields = new HashMap<>();
 
+    neutronInstance() {
+    }
+
     neutronInstance(neutronClass klass) {
         this.klass = klass;
     }

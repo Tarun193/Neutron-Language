@@ -2,13 +2,15 @@ import java.util.List;
 import java.util.Map;
 
 // it's an java repersentation of neutron classes.
-public class neutronClass implements neutronCallable {
+public class neutronClass extends neutronInstance implements neutronCallable {
     final String name;
     final Map<String, neutronFunction> methods;
+    final Map<String, neutronFunction> staticMethods;
 
-    neutronClass(String name, Map<String, neutronFunction> methods) {
+    neutronClass(String name, Map<String, neutronFunction> methods, Map<String, neutronFunction> staticMethods) {
         this.name = name;
         this.methods = methods;
+        this.staticMethods = staticMethods;
     }
 
     @Override
@@ -43,5 +45,13 @@ public class neutronClass implements neutronCallable {
         }
 
         return null;
+    }
+
+    @Override
+    public Object get(Token name) {
+        if (staticMethods.containsKey(name.lexeme)) {
+            return staticMethods.get(name.lexeme);
+        }
+        throw new RuntimeError(name, "Undefined static method " + name.lexeme + ".");
     }
 }

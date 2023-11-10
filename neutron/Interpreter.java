@@ -343,12 +343,19 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
         // creating an hashmap for storing all the methods of the class.
         Map<String, neutronFunction> methods = new HashMap<>();
+        Map<String, neutronFunction> staticMethods = new HashMap<>();
         for (Stmt.Function method : stmt.methods) {
             neutronFunction function = new neutronFunction(method, enviornment, method.name.lexeme.equals("init"));
             methods.put(method.name.lexeme, function);
 
         }
-        neutronClass klass = new neutronClass(stmt.name.lexeme, methods);
+        for (Stmt.Function staticMethod : stmt.staticMethods) {
+            neutronFunction function = new neutronFunction(staticMethod, enviornment,
+                    staticMethod.name.lexeme.equals("init"));
+            staticMethods.put(staticMethod.name.lexeme, function);
+
+        }
+        neutronClass klass = new neutronClass(stmt.name.lexeme, methods, staticMethods);
         enviornment.assign(stmt.name, klass);
         return null;
     }

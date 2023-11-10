@@ -12,8 +12,8 @@ abstract class Stmt{
     R visitForStmt(For stmt);
     R visitBreakStmt(Break stmt);
     R visitContinueStmt(Continue stmt);
-    R visitReturnStmt(Return stmt);
     R visitClassStmt(Class stmt);
+    R visitReturnStmt(Return stmt);
   }
 
   abstract <R> R accept(Visitor<R> visitor);
@@ -149,6 +149,22 @@ abstract class Stmt{
     }
 
   }
+   static class Class extends Stmt {
+    Class(Token name, List<Stmt.Function> methods, List<Stmt.Function> staticMethods){
+    this.name = name;
+    this.methods = methods;
+    this.staticMethods = staticMethods;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitClassStmt(this);
+    }
+
+    final Token name;
+    final List<Stmt.Function> methods;
+    final List<Stmt.Function> staticMethods;
+  }
    static class Return extends Stmt {
     Return(Token keyword, Expr value){
     this.keyword = keyword;
@@ -162,19 +178,5 @@ abstract class Stmt{
 
     final Token keyword;
     final Expr value;
-  }
-   static class Class extends Stmt {
-    Class(Token name, List<Stmt.Function> methods){
-    this.name = name;
-    this.methods = methods;
-    }
-
-    @Override
-    <R> R accept(Visitor<R> visitor) {
-      return visitor.visitClassStmt(this);
-    }
-
-    final Token name;
-    final List<Stmt.Function> methods;
   }
 }

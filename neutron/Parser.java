@@ -522,14 +522,18 @@ class Parser {
         Token name = consume(TokenType.IDENTIFIER, "Expected class name after 'class' keyword");
         consume(TokenType.LEFT_BRACE, "Expected '{' after class name");
         List<Stmt.Function> methods = new ArrayList<>();
+        List<Stmt.Function> staticMethods = new ArrayList<>();
 
         while (!(check(TokenType.RIGHT_BRACE) || isAtEnd())) {
+            if (match(TokenType.CLASS)) {
+                staticMethods.add((Stmt.Function) function("method"));
+            }
             methods.add((Stmt.Function) function("method"));
         }
 
         consume(TokenType.RIGHT_BRACE, "Expected '}' after class body.");
 
-        return new Stmt.Class(name, methods);
+        return new Stmt.Class(name, methods, staticMethods);
     }
 
     // ------------- Utility methods -----------------------;
