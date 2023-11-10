@@ -17,7 +17,8 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         NONE,
         FUNCTION,
         METHOD,
-        INITIALIZER
+        INITIALIZER,
+        STATICMETHOD
     }
 
     private enum ClassType {
@@ -227,7 +228,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
             resolveFunction(method, currentFunctionType.METHOD);
         }
         for (Stmt.Function method : stmt.staticMethods) {
-            resolveFunction(method, currentFunctionType.METHOD);
+            resolveFunction(method, currentFunctionType.STATICMETHOD);
         }
         endScope();
         currentEnclosingClass = enclosingClass;
@@ -251,6 +252,9 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     // Resolving this expression;
     @Override
     public Void visitThisExpr(Expr.This expr) {
+        if (currentFunctionType == FunctionType.STATICMETHOD) {
+            neutron.error(expr.Keyword, "Cannot refer to instance properties in a static method");
+        }
         if (currentEnclosingClass == ClassType.None) {
             neutron.error(expr.Keyword, "Cannot use 'this' outside any class.");
         }

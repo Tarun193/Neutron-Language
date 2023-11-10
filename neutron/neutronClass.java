@@ -54,4 +54,8 @@ public class neutronClass extends neutronInstance implements neutronCallable {
         }
         throw new RuntimeError(name, "Undefined static method " + name.lexeme + ".");
     }
+
+    public Boolean isStatic(String name) {
+        return staticMethods.containsKey(name);
+    }
 }

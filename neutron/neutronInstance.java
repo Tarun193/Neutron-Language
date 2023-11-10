@@ -21,6 +21,9 @@ public class neutronInstance {
         if (fields.containsKey(name.lexeme)) {
             return fields.get(name.lexeme);
         }
+
+        if (klass.isStatic(name.lexeme))
+            throw new RuntimeError(name, "Can not call a static method an instance");
         // If the given token is not an state, it can be method then
         neutronFunction method = klass.findMethod(name.lexeme);
 
