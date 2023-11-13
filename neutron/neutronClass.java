@@ -7,10 +7,14 @@ public class neutronClass extends neutronInstance implements neutronCallable {
     final Map<String, neutronFunction> methods;
     final Map<String, neutronFunction> staticMethods;
 
-    neutronClass(String name, Map<String, neutronFunction> methods, Map<String, neutronFunction> staticMethods) {
+    final Object superClass;
+
+    neutronClass(String name, Map<String, neutronFunction> methods,
+            Map<String, neutronFunction> staticMethods, neutronClass superClass) {
         this.name = name;
         this.methods = methods;
         this.staticMethods = staticMethods;
+        this.superClass = superClass;
     }
 
     @Override

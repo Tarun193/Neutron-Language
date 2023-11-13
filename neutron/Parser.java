@@ -32,7 +32,7 @@ class Parser {
      * program → declaration* EOF ;
      * block → "{" declaration* "}" ;
      * declaration → classDecl | funDecl | varDecl | statement ;
-     * classDecl -> "classs" IDENTIFIER "{" functionDecl* "}" ;
+     * classDecl -> "classs" IDENTIFIER (":" IDENTIFIER)? "{" functionDecl* "}" ;
      * funDecl -> "fun" function;
      * function -> IDENTIFIER "("parameters?")" block;
      * parameter -> INDENTIFIER ("," INDENTIFIER)*;
@@ -520,6 +520,11 @@ class Parser {
     // For Handling class declaration;
     private Stmt classDeclarartion() {
         Token name = consume(TokenType.IDENTIFIER, "Expected class name after 'class' keyword");
+        Expr.Variable superClass = null;
+        if (match(TokenType.COLON)) {
+            consume(TokenType.IDENTIFIER, "Expected super class name after ':'.");
+            superClass = new Expr.Variable(previous());
+        }
         consume(TokenType.LEFT_BRACE, "Expected '{' after class name");
         List<Stmt.Function> methods = new ArrayList<>();
         List<Stmt.Function> staticMethods = new ArrayList<>();
@@ -533,7 +538,7 @@ class Parser {
 
         consume(TokenType.RIGHT_BRACE, "Expected '}' after class body.");
 
-        return new Stmt.Class(name, methods, staticMethods);
+        return new Stmt.Class(name, methods, staticMethods, superClass);
     }
 
     // ------------- Utility methods -----------------------;

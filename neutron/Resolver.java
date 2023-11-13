@@ -216,8 +216,16 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitClassStmt(Stmt.Class stmt) {
-        define(stmt.name);
         declare(stmt.name);
+        define(stmt.name);
+
+        if (stmt.superClass != null && stmt.name.lexeme.equals(stmt.superClass.name.lexeme)) {
+            
+        }
+
+        if (stmt.superClass != null) {
+            resolve(stmt.superClass);
+        }
 
         ClassType enclosingClass = currentEnclosingClass;
         currentEnclosingClass = ClassType.CLASS;

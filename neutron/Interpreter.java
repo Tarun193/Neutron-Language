@@ -339,6 +339,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     // For interperting class Node.
     @Override
     public Void visitClassStmt(Stmt.Class stmt) {
+        Object superClass = null;
+        if (stmt.superClass != null) {
+            superClass = evaluate(stmt.superClass);
+            if (!(superClass instanceof neutronClass)) {
+                throw new RuntimeError(stmt.superClass.name, "Super class must be a class.");
+            }
+        }
         enviornment.define(stmt.name, null);
 
         // creating an hashmap for storing all the methods of the class.
@@ -355,7 +362,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
             staticMethods.put(staticMethod.name.lexeme, function);
 
         }
-        neutronClass klass = new neutronClass(stmt.name.lexeme, methods, staticMethods);
+        neutronClass klass = new neutronClass(stmt.name.lexeme, methods, staticMethods, (neutronClass) superClass);
         enviornment.assign(stmt.name, klass);
         return null;
     }

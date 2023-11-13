@@ -58,7 +58,8 @@ public class Generate_AST {
                 "For: Expr codition, Expr runner, Stmt loopBody",
                 "Break:",
                 "Continue:",
-                "Class: Token name, List<Stmt.Function> methods, List<Stmt.Function> staticMethods",
+                "Class: Token name, List<Stmt.Function> methods, List<Stmt.Function> staticMethods," +
+                        " Expr.Variable superClass",
                 "Return: Token keyword, Expr value"));
 
     }
