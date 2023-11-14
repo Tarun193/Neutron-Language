@@ -7,7 +7,7 @@ public class neutronClass extends neutronInstance implements neutronCallable {
     final Map<String, neutronFunction> methods;
     final Map<String, neutronFunction> staticMethods;
 
-    final Object superClass;
+    final neutronClass superClass;
 
     neutronClass(String name, Map<String, neutronFunction> methods,
             Map<String, neutronFunction> staticMethods, neutronClass superClass) {
@@ -46,6 +46,11 @@ public class neutronClass extends neutronInstance implements neutronCallable {
     neutronFunction findMethod(String name) {
         if (methods.containsKey(name)) {
             return methods.get(name);
+        }
+
+        // Looking in to super class
+        if (superClass != null) {
+            return superClass.findMethod(name);
         }
 
         return null;

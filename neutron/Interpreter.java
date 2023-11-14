@@ -348,6 +348,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         }
         enviornment.define(stmt.name, null);
 
+        // Creating a new enviornment which will contain the super class and
+        // it's will be parent current enviornment.
+        if (stmt.superClass != null) {
+            enviornment = new Enviornment(enviornment);
+            enviornment.define("super", superClass);
+        }
+
         // creating an hashmap for storing all the methods of the class.
         Map<String, neutronFunction> methods = new HashMap<>();
         Map<String, neutronFunction> staticMethods = new HashMap<>();
@@ -363,6 +370,15 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
         }
         neutronClass klass = new neutronClass(stmt.name.lexeme, methods, staticMethods, (neutronClass) superClass);
+
+        /*
+         * Re-assigning the current enviornment to the original one,
+         * as we changed it, so that all the subclass methods catches the
+         * enviornment with the superclass variable.
+         */
+        if (superClass != null) {
+            enviornment = enviornment.enclosing;
+        }
         enviornment.assign(stmt.name, klass);
         return null;
     }
@@ -392,6 +408,23 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     @Override
     public Object visitThisExpr(Expr.This expr) {
         return lookUpVariable(expr.Keyword, expr);
+    }
+
+    @Override
+    public Object visitSuperExpr(Expr.Super expr) {
+        int distance = locals.get(expr);
+        neutronClass superClass = (neutronClass) enviornment.getAt(distance, "super");
+
+        neutronInstance Object = (neutronInstance) enviornment.getAt(distance - 1, "this");
+
+        neutronFunction method = superClass.findMethod(expr.method.lexeme);
+
+        if (method == null) {
+            throw new RuntimeError(expr.method,
+                    "Undefined method '" + expr.method.lexeme + "'.");
+        }
+
+        return method.bind(Object);
     }
 
     // Resolve method for resolving depth which we are getting from semantic

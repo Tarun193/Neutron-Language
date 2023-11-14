@@ -44,7 +44,8 @@ public class Generate_AST {
                 "Ternery: Expr condition, Expr left, Expr right",
                 "Get: Expr Object, Token name",
                 "Set: Expr Object, Token name, Expr value",
-                "This: Token Keyword"));
+                "This: Token Keyword",
+                "Super: Token Keyword, Token method"));
 
         defineAst(outputDir, "Stmt", Arrays.asList(
                 "Expression: Expr expression",

@@ -1,18 +1,19 @@
-class Cake {
-  init(){
-    this.flavor = "vanilla";
-  }
-
-  class test(n){
-    return this.flavor;
-  }
-
-  taste() {
-    box adjective = "delicious";
-    print "The " + this.flavor + " cake is " + adjective + "!";
+class A {
+  method() {
+    print "A method";
   }
 }
 
-box cake = Cake();
-cake.taste(); // Prints "The German chocolate cake is delicious!".
-print Cake.test(4);
+class B : A {
+  method() {
+    print "B method";
+  }
+
+  test() {
+    super.method();
+  }
+}
+
+class C : B {}
+
+C().test();

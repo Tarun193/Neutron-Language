@@ -72,7 +72,8 @@ class Parser {
      * lambda -> "("parameters?")" : ExprStmt | PrintStmt;
      * arguments → experssion ("," expression)*;
      * primary → NUMBER | STRING | "true" | "false" | "nil"
-     * | "(" expression ")" | IDENTIFIER ;
+     * | "(" expression ")" | IDENTIFIER
+     * | "super" "." DENTIFIER
      */
 
     // For handling expression grammer, it straight forward as it expands equality
@@ -259,7 +260,7 @@ class Parser {
     }
 
     // primary → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" |
-    // IDENTIFIER ;
+    // IDENTIFIER | "super" "." IDENTIFIER ;
 
     private Expr primary() {
         if (match(TokenType.FALSE))
@@ -274,6 +275,13 @@ class Parser {
 
         if (match(TokenType.THIS))
             return new Expr.This(previous());
+
+        if (match(TokenType.SUPER)) {
+            Token keyword = previous();
+            consume(TokenType.DOT, "Expected '.' after 'super'.");
+            Token method = consume(TokenType.IDENTIFIER, "Expected a superclass method name");
+            return new Expr.Super(keyword, method);
+        }
 
         if (match(TokenType.LEFT_PAREN)) {
             Expr expr = expression();

@@ -220,11 +220,13 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         define(stmt.name);
 
         if (stmt.superClass != null && stmt.name.lexeme.equals(stmt.superClass.name.lexeme)) {
-            
+
         }
 
         if (stmt.superClass != null) {
             resolve(stmt.superClass);
+            beginScope();
+            scopes.peek().put("super", true);
         }
 
         ClassType enclosingClass = currentEnclosingClass;
@@ -239,6 +241,11 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
             resolveFunction(method, currentFunctionType.STATICMETHOD);
         }
         endScope();
+
+        // As we started scope only if the super class exists in the same why we ended
+        // scope.
+        if (stmt.superClass != null)
+            endScope();
         currentEnclosingClass = enclosingClass;
         return null;
     }
@@ -266,6 +273,12 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         if (currentEnclosingClass == ClassType.None) {
             neutron.error(expr.Keyword, "Cannot use 'this' outside any class.");
         }
+        resolveLocal(expr, expr.Keyword);
+        return null;
+    }
+
+    @Override
+    public Void visitSuperExpr(Expr.Super expr) {
         resolveLocal(expr, expr.Keyword);
         return null;
     }
