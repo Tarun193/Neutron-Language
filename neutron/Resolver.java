@@ -23,7 +23,8 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     private enum ClassType {
         None,
-        CLASS
+        CLASS,
+        SUBCLASS
     }
 
     private ClassType currentEnclosingClass = ClassType.None;
@@ -220,17 +221,18 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         define(stmt.name);
 
         if (stmt.superClass != null && stmt.name.lexeme.equals(stmt.superClass.name.lexeme)) {
-
-        }
-
-        if (stmt.superClass != null) {
-            resolve(stmt.superClass);
-            beginScope();
-            scopes.peek().put("super", true);
+            neutron.error(stmt.name, "A class cannot inherit from itself");
         }
 
         ClassType enclosingClass = currentEnclosingClass;
         currentEnclosingClass = ClassType.CLASS;
+
+        if (stmt.superClass != null) {
+            currentEnclosingClass = ClassType.SUBCLASS;
+            resolve(stmt.superClass);
+            beginScope();
+            scopes.peek().put("super", true);
+        }
 
         beginScope();
         scopes.peek().put("this", true);
@@ -279,6 +281,13 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitSuperExpr(Expr.Super expr) {
+        
+        if (currentEnclosingClass == ClassType.None) {
+            neutron.error(expr.Keyword, "Can't use super outside the class");
+        }
+        else if(currentEnclosingClass != ClassType.SUBCLASS){
+            neutron.error(expr.Keyword, "Can't use 'super' in a class with super class");
+        }
         resolveLocal(expr, expr.Keyword);
         return null;
     }
