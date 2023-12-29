@@ -32,7 +32,8 @@ class Parser {
      * program → declaration* EOF ;
      * block → "{" declaration* "}" ;
      * declaration → classDecl | funDecl | varDecl | statement ;
-     * classDecl -> "classs" IDENTIFIER (":" IDENTIFIER)? "{" functionDecl* "}" ;
+     * classDecl -> "class" IDENTIFIER (":" IDENTIFIER)? "{" class functionDecl* |
+     * functionDecl* "}" ;
      * funDecl -> "fun" function;
      * function -> IDENTIFIER "("parameters?")" block;
      * parameter -> INDENTIFIER ("," INDENTIFIER)*;

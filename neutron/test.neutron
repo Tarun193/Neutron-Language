@@ -1,13 +1,29 @@
-class car{
-  init(){
-    this.count = 0;
-  }
+class MyClass {
+    // Constructor
+    init(){
+      this.myProperty = 5;
+      this.myProperty2 = "Hello";
+    }
 
-  class getCount(){
-    print "chill";
-  }
+    // Static methods Here
+    class doChill(){
+      print "Chill";
+    }
+    //  emethod dclarations here
+    addTwoNumbers(a, b){
+      return a + b;
+    }
 }
 
-box a = car();
-car.getCount();
-print a.count;
+class MyDerivedClass : MyClass {
+    init(){
+      super.init();
+      this.childProperty = 6;
+    }
+}
+
+box obj = MyDerivedClass();
+
+print obj.myProperty; // 6
+print obj.myProperty2; // "Hello"
+MyClass.doChill(); // "Chill"
