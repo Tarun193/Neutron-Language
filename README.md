@@ -188,3 +188,51 @@ box sumResult = sumFun(x, y);
       ```
 
 You can use these statements as appropriate in your Neutron programs to control the flow and perform various tasks.
+
+
+## Class Declaration and Inheritance
+- **Declare a Class**: Use `class ClassName` to define a new class.
+- **Inheritance**: For creating a subclass, use `class DerivedClass : BaseClass`.
+
+### Constructors
+- **Initialization**: Use `init()` to define a constructor.
+- **Base Class Constructor**: In derived classes, call `super.init()` to initialize the base class.
+
+### Static and Instance Methods
+- **Static Methods**: Declare with `class methodName()`.
+- **Instance Methods**: Defined as `methodName(parameters)`.
+
+### Creating and Using Objects
+- **Instantiation**: Use `box obj = ClassName()` to create an object.
+- **Accessing Members**: Use `obj.property` or `obj.method()` to access properties or methods.
+
+```neutron
+class MyClass {
+    init(){
+      this.myProperty = 5;
+      this.myProperty2 = "Hello";
+    }
+
+    class doChill(){
+      print "Chill";
+    }
+
+    addTwoNumbers(a, b){
+      return a + b;
+    }
+}
+
+class MyDerivedClass : MyClass {
+    init(){
+      super.init();
+      this.childProperty = 6;
+    }
+}
+
+box obj = MyDerivedClass();
+print obj.myProperty;     // Outputs 5
+print obj.myProperty2;    // Outputs "Hello"
+MyClass.doChill();        // Outputs "Chill"
+
+```
+
