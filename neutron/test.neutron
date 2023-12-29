@@ -1,19 +1,13 @@
-class A {
-  method() {
-    print "A method";
+class car{
+  init(){
+    this.count = 0;
+  }
+
+  class getCount(){
+    print "chill";
   }
 }
 
-class B : A {
-  method() {
-    print "B method";
-  }
-
-  test() {
-    super.method();
-  }
-}
-
-class C : B {}
-
-C().test();
+box a = car();
+car.getCount();
+print a.count;

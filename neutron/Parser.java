@@ -540,6 +540,7 @@ class Parser {
         while (!(check(TokenType.RIGHT_BRACE) || isAtEnd())) {
             if (match(TokenType.CLASS)) {
                 staticMethods.add((Stmt.Function) function("method"));
+                continue;
             }
             methods.add((Stmt.Function) function("method"));
         }
